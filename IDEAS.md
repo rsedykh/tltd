@@ -4,15 +4,21 @@ This document contains feature suggestions for future development, organized by 
 
 ## Tier 2: Medium Effort Features
 
+### Multi-Select Operations
+- **Select multiple tasks**: Shift+arrow or `m` to mark tasks
+- **Bulk complete**: Complete all selected tasks at once
+- **Bulk move**: Move selected tasks to another basket
+- **Bulk delete**: Delete multiple tasks at once
+
+### Task Notes/Descriptions
+- **Multi-line descriptions**: Press `v` on a task to add/edit a longer description
+- **Collapsible notes**: Show first line in tree, expand to see full note
+- **Markdown support**: Basic formatting in notes (bold, italic, lists)
+
 ### Search and Filter
 - **Global search**: Press `/` to open search, filter tasks across all baskets by title
 - **Filter by completion state**: Quick toggle to show only incomplete tasks
 - **Regex search support**: For power users who need pattern matching
-
-### Task Notes/Descriptions
-- **Multi-line descriptions**: Press `n` on a task to add/edit a longer description
-- **Collapsible notes**: Show first line in tree, expand to see full note
-- **Markdown support**: Basic formatting in notes (bold, italic, lists)
 
 ### Data Export/Import
 - **Export to JSON**: Already supported via `~/.tltd/tasks.json`
@@ -26,15 +32,10 @@ This document contains feature suggestions for future development, organized by 
 - **Skip/snooze**: Defer a recurring instance
 - **Recurrence indicators**: Visual marker showing task is recurring
 
-### Multi-Select Operations
-- **Select multiple tasks**: Shift+arrow or `m` to mark tasks
-- **Bulk complete**: Complete all selected tasks at once
-- **Bulk move**: Move selected tasks to another basket
-- **Bulk delete**: Delete multiple tasks at once
-
 ### Keyboard Macro Recording
 - **Record sequences**: Record and replay common task workflows
 - **Named macros**: Save macros for repeated use
+- **Testing**: Try to use these macros for automating testing
 
 ### Task Statistics
 - **Completion rate**: Tasks completed per day/week
@@ -44,6 +45,17 @@ This document contains feature suggestions for future development, organized by 
 ---
 
 ## Tier 3: Large Effort Features
+
+### Cloud Sync
+- **Server component**: Self-hosted sync server
+- **Conflict resolution**: Handle simultaneous edits
+- **Offline support**: Queue changes when disconnected
+- **End-to-end encryption**: Secure sync
+
+### Mobile Companion
+- **Quick capture API**: Add tasks via HTTP endpoint
+- **iOS/Android widgets**: View tasks on phone
+- **Push notifications**: Reminders on mobile
 
 ### Custom Baskets
 - **Create/delete baskets**: User-defined organization
@@ -63,17 +75,6 @@ This document contains feature suggestions for future development, organized by 
 - **Time estimates**: Set expected duration
 - **Actual vs estimated reports**: Compare predictions to reality
 - **Pomodoro mode**: Built-in focus timer
-
-### Cloud Sync
-- **Server component**: Self-hosted sync server
-- **Conflict resolution**: Handle simultaneous edits
-- **Offline support**: Queue changes when disconnected
-- **End-to-end encryption**: Secure sync
-
-### Mobile Companion
-- **Quick capture API**: Add tasks via HTTP endpoint
-- **iOS/Android widgets**: View tasks on phone
-- **Push notifications**: Reminders on mobile
 
 ### Collaboration Features
 - **Shared baskets**: Multiple users access same basket
