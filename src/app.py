@@ -150,8 +150,6 @@ class TaskTree(Vertical):
                 input_widget.styles.padding = (0, 0, 0, padding_left)
                 container.mount(input_widget)
                 input_widget.focus()
-                # Move cursor to end and clear selection (use timer to run after focus settles)
-                self.app.set_timer(0.05, input_widget.action_end)
                 rendered_editor = True
             else:
                 # Regular task line
