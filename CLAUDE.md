@@ -153,10 +153,10 @@ Note: UI testing is challenging with Textual and requires manual testing or spec
 3. **UI Layer (`src/app.py`)**
    - `TodoApp`: Main Textual application with undo history
    - `BasketPane`: Left sidebar showing baskets and task counts
-   - `TaskTree`: Main area displaying hierarchical task tree
+   - `TaskTree`: Main area displaying hierarchical task tree with inline editing
    - `TaskLine`: Individual task display with collapse indicators and child count
-   - `InputDialog`: Modal dialog for task input
    - `BasketSelectorDialog`: Modal dialog for selecting basket when moving tasks
+   - `HelpScreen`: Modal screen showing keyboard shortcuts
    - Footer: Displays keyboard shortcuts
 
 4. **Entry Point (`src/main.py`)**
@@ -298,22 +298,17 @@ def on_key(self, event) -> None:
 
 ## Known Issues & Future Improvements
 
-### Not Yet Implemented
-- Tests (test_models.py and test_storage.py created but not yet run/verified)
-- Help screen could have better formatting
-- No visual indicator which panel is focused (only border weight difference)
+### Current Limitations
 - No command-line arguments (e.g., `tltd add "task name"`)
-- Move task to different basket functionality removed (was on `q` key)
+- Panel focus indicated only by border weight difference
 
 ### Potential Enhancements
-- Drag & drop task reordering
+See `IDEAS.md` for detailed feature suggestions including:
 - Search/filter tasks
-- Task priorities or tags
-- Due dates
-- Custom baskets
-- Export/import functionality
 - Task notes/descriptions
-- Keyboard shortcut customization
+- Recurring tasks
+- Data export
+- Custom baskets
 
 ## Development Workflow
 
