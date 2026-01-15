@@ -92,6 +92,30 @@ class TodoData:
 
     def __init__(self):
         self.baskets: Dict[str, List[Task]] = {basket: [] for basket in self.BASKETS}
+        self._task_index: Dict[str, Task] = {}  # task_id -> Task for O(1) lookup
+
+    def _rebuild_index(self) -> None:
+        """Rebuild the task index from all baskets."""
+        self._task_index.clear()
+        for basket_tasks in self.baskets.values():
+            for task in basket_tasks:
+                self._index_task_recursive(task)
+
+    def _index_task_recursive(self, task: Task) -> None:
+        """Add a task and all its children to the index."""
+        self._task_index[task.id] = task
+        for child in task.children:
+            self._index_task_recursive(child)
+
+    def _add_to_index(self, task: Task) -> None:
+        """Add a single task and its children to the index."""
+        self._index_task_recursive(task)
+
+    def _remove_from_index(self, task: Task) -> None:
+        """Remove a task and its children from the index."""
+        self._task_index.pop(task.id, None)
+        for child in task.children:
+            self._remove_from_index(child)
 
     def add_task(self, basket: str, task: Task, parent_id: Optional[str] = None) -> bool:
         """
@@ -106,21 +130,18 @@ class TodoData:
             parent = self.find_task(parent_id)
             if parent:
                 parent.add_child(task)
+                self._add_to_index(task)
                 return True
             return False
         else:
             # Add to basket root
             self.baskets[basket].append(task)
+            self._add_to_index(task)
             return True
 
     def find_task(self, task_id: str) -> Optional[Task]:
-        """Find a task by ID across all baskets."""
-        for basket_tasks in self.baskets.values():
-            for task in basket_tasks:
-                result = task.find_task(task_id)
-                if result:
-                    return result
-        return None
+        """Find a task by ID across all baskets. O(1) lookup via index."""
+        return self._task_index.get(task_id)
 
     def find_task_location(self, task_id: str) -> Optional[Tuple[str, Optional[str]]]:
         """
@@ -178,11 +199,18 @@ class TodoData:
 
     def delete_task(self, task_id: str) -> bool:
         """Delete a task and all its children. Returns True if successful."""
+        task = self.find_task(task_id)
+        if not task:
+            return False
+
         location = self.find_task_location(task_id)
         if not location:
             return False
 
         basket_name, parent_id = location
+
+        # Remove from index before removing from data structure
+        self._remove_from_index(task)
 
         if parent_id:
             parent = self.find_task(parent_id)
@@ -223,6 +251,7 @@ class TodoData:
         for basket, tasks_data in data.items():
             if basket in cls.BASKETS:
                 todo_data.baskets[basket] = [Task.from_dict(task_data) for task_data in tasks_data]
+        todo_data._rebuild_index()
         return todo_data
 
     def __repr__(self) -> str:
