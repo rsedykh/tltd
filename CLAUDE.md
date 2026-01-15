@@ -398,35 +398,43 @@ tltd/
 
 ## Recent Changes (Context Handoff)
 
-### Latest Session (Sanity Check & Code Cleanup)
+### Latest Session (Performance, UX & Keyboard Support)
 
-**Comprehensive codebase review completed:**
+**Major improvements implemented:**
 
-1. **Removed dead code**:
-   - Deleted InputDialog class (38 lines) - unused after implementing inline editing
-   - Removed unused CSS: #dialog-input and #dialog-buttons (9 lines)
-   - Removed unused variable: TaskLine._task_id
+1. **Performance - O(1) Task Lookup**:
+   - Added `_task_index` dictionary to TodoData for instant task lookup
+   - Methods: `_rebuild_index()`, `_add_to_index()`, `_remove_from_index()`
+   - Fixed bug: newly created tasks weren't added to index, breaking edit/move
 
-2. **Files reviewed**:
-   - ✅ src/app.py - Found and fixed 3 issues
-   - ✅ src/models.py - No issues found
-   - ✅ src/storage.py - No issues found
-   - ✅ tests/ - All 28 tests passing
+2. **UX Improvements**:
+   - Undo feedback: Shows "Nothing to undo" or "Undone (N steps remaining)"
+   - Basket quick-jump: `` ` `` for Inbox, `1-7` for Mon-Sun, `0` for Later
+   - Quick-jump keys also work in basket selector dialog
+   - Visual separators between Inbox/weekdays/Later in basket list
+   - Bottom task selected when deleting last task
+   - Shift+A/D: Collapse/expand all nested tasks recursively
 
-3. **Testing**:
-   - All tests pass after cleanup
-   - Syntax validation successful
-   - No functional changes, only code removal
+3. **Russian Keyboard Support (ЙЦУКЕН)**:
+   - All letter keybindings duplicated for Russian layout
+   - с, ч, а, ф, в, ц, ы, у, й, я + Shift variants
+   - ё for Inbox quick-jump (same physical key as backtick)
 
-**Impact**: Reduced codebase by ~50 lines, improved maintainability
+4. **Bug Fixes**:
+   - Fixed basket navigation after moving tasks
+   - Fixed selection index going out of bounds
+   - Safe timer-based text deselection with mounted check
 
-4. **Session End Protocol**:
-   - Added mandatory session-end workflow to CLAUDE.md
-   - Automatic sanity check + tests + documentation update
-   - Ensures clean handoffs between sessions
-   - Includes checklist for easy following
+5. **Testing**:
+   - Expanded from 28 to 60 tests
+   - Added edge cases, index tests, nested task tests
+   - All tests passing
 
-### Previous Session (Inline Editing + Focus Fixes)
+6. **Documentation**:
+   - Created IDEAS.md with Tier 2/3 feature suggestions
+   - Updated keybindings in README.md, CLAUDE.md, help screen
+
+### Previous Session (Sanity Check & Code Cleanup)
 
 1. **Inline editing implementation**:
    - Replaced modal InputDialog popups with inline Input widgets
