@@ -8,9 +8,55 @@ TLTD (Terminal Todo List) is a terminal-based todo application with hierarchical
 
 **Status**: Fully functional MVP with all core features implemented including undo functionality.
 
+## Session End Protocol ⚠️ CRITICAL
+
+**When the user says "session is over" or similar, AUTOMATICALLY perform:**
+
+1. **Sanity Check Sweep**:
+   - Review all modified files for inconsistencies
+   - Check for naming issues (unused variables, unclear names)
+   - Look for refactoring leftovers (dead code, unused imports)
+   - Verify cross-file consistency
+   - Check for TODO comments or incomplete work
+   - Highlight any problems found
+
+2. **Run Tests**:
+   ```bash
+   source venv/bin/activate && python3 -m pytest tests/ -v
+   ```
+   - All tests must pass
+   - If tests fail, fix before session ends
+
+3. **Update Handoff Documentation**:
+   - Update "Recent Changes" section in CLAUDE.md
+   - Summarize what was accomplished
+   - Note any unfinished work or known issues
+   - Update file line counts if significantly changed
+
+4. **Commit Changes**:
+   - Create descriptive commit message
+   - Include Co-Authored-By line
+   - Push if user requests
+
+**This protocol ensures clean handoffs between sessions.**
+
+### Session End Checklist
+
+```markdown
+- [ ] Sanity check: Review modified files
+- [ ] Check for dead code, unused imports, naming issues
+- [ ] Run: pytest tests/ -v (all must pass)
+- [ ] Update CLAUDE.md "Recent Changes" section
+- [ ] Git commit with descriptive message
+- [ ] Inform user of status and any issues found
+```
+
+---
+
 ## Claude Code Testing Workflow
 
 **When Claude should run tests:**
+- ⚠️ **At session end (MANDATORY)**
 - When explicitly asked by the user (e.g., "run tests")
 - After implementing a new feature
 - After refactoring existing code
@@ -373,6 +419,12 @@ tltd/
    - No functional changes, only code removal
 
 **Impact**: Reduced codebase by ~50 lines, improved maintainability
+
+4. **Session End Protocol**:
+   - Added mandatory session-end workflow to CLAUDE.md
+   - Automatic sanity check + tests + documentation update
+   - Ensures clean handoffs between sessions
+   - Includes checklist for easy following
 
 ### Previous Session (Inline Editing + Focus Fixes)
 
