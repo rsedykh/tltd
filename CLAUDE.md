@@ -352,7 +352,29 @@ tltd/
 
 ## Recent Changes (Context Handoff)
 
-### Current Session (Inline Editing + Focus Fixes)
+### Latest Session (Sanity Check & Code Cleanup)
+
+**Comprehensive codebase review completed:**
+
+1. **Removed dead code**:
+   - Deleted InputDialog class (38 lines) - unused after implementing inline editing
+   - Removed unused CSS: #dialog-input and #dialog-buttons (9 lines)
+   - Removed unused variable: TaskLine._task_id
+
+2. **Files reviewed**:
+   - ✅ src/app.py - Found and fixed 3 issues
+   - ✅ src/models.py - No issues found
+   - ✅ src/storage.py - No issues found
+   - ✅ tests/ - All 28 tests passing
+
+3. **Testing**:
+   - All tests pass after cleanup
+   - Syntax validation successful
+   - No functional changes, only code removal
+
+**Impact**: Reduced codebase by ~50 lines, improved maintainability
+
+### Previous Session (Inline Editing + Focus Fixes)
 
 1. **Inline editing implementation**:
    - Replaced modal InputDialog popups with inline Input widgets

@@ -46,9 +46,6 @@ class TaskLine(Static):
 
         super().__init__(content)
 
-        # Store task reference for later use
-        self._task_id = task.id
-
         # Apply styling
         if task.completed:
             self.add_class("dim")
@@ -319,45 +316,6 @@ class BasketPane(Vertical):
         self.refresh_baskets()
 
 
-class InputDialog(ModalScreen[str]):
-    """Modal dialog for text input."""
-
-    def __init__(self, title: str, initial_value: str = ""):
-        super().__init__()
-        self.dialog_title = title
-        self.initial_value = initial_value
-
-    def compose(self) -> ComposeResult:
-        with Container(id="dialog-container"):
-            yield Label(self.dialog_title, id="dialog-title")
-            yield Input(value=self.initial_value, id="dialog-input")
-            with Horizontal(id="dialog-buttons"):
-                yield Button("OK", variant="primary", id="ok-btn")
-                yield Button("Cancel", variant="default", id="cancel-btn")
-
-    def on_mount(self) -> None:
-        """Focus the input when mounted."""
-        self.query_one("#dialog-input", Input).focus()
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button presses."""
-        if event.button.id == "ok-btn":
-            input_widget = self.query_one("#dialog-input", Input)
-            self.dismiss(input_widget.value)
-        else:
-            self.dismiss("")
-
-    def on_input_submitted(self, event: Input.Submitted) -> None:
-        """Handle Enter key in input."""
-        self.dismiss(event.value)
-
-    def on_key(self, event) -> None:
-        """Handle key presses."""
-        if event.key == "escape":
-            self.dismiss("")
-            event.stop()  # Prevent ESC from reaching TodoApp quit binding
-
-
 class BasketSelectorDialog(ModalScreen[str]):
     """Modal dialog for selecting a basket."""
 
@@ -475,17 +433,6 @@ class TodoApp(App):
     #dialog-title {
         margin-bottom: 1;
         text-style: bold;
-    }
-
-    #dialog-input {
-        width: 100%;
-        margin-bottom: 1;
-    }
-
-    #dialog-buttons {
-        width: 100%;
-        height: auto;
-        align: center middle;
     }
 
     #basket-list {
