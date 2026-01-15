@@ -709,6 +709,11 @@ class TodoApp(App):
             self.todo_data.delete_task(task.id)
             self.save_data()
             self.task_tree.refresh_tasks()
+            # Adjust selection if now out of bounds (deleted last task)
+            max_idx = len(self.task_tree.flat_list) - 1
+            if self.task_tree.selected_index > max_idx:
+                self.task_tree.selected_index = max(0, max_idx)
+                self.task_tree._render_tasks()
 
     def action_move_task(self) -> None:
         """Move task to a different basket."""
