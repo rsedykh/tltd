@@ -150,6 +150,14 @@ class TaskTree(Vertical):
                 input_widget.styles.padding = (0, 0, 0, padding_left)
                 container.mount(input_widget)
                 input_widget.focus()
+                # Move cursor to end - check widget still exists before calling
+                def deselect():
+                    try:
+                        if input_widget.is_mounted:
+                            input_widget.action_end()
+                    except Exception:
+                        pass  # Widget was destroyed, ignore
+                self.app.set_timer(0.05, deselect)
                 rendered_editor = True
             else:
                 # Regular task line
