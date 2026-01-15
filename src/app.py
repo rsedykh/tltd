@@ -348,6 +348,19 @@ class BasketSelectorDialog(ModalScreen[str]):
             else:
                 label.remove_class("selected")
 
+    # Quick-jump key mapping: key -> basket name
+    QUICK_JUMP_KEYS = {
+        "grave_accent": "Inbox",
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday",
+        "7": "Sunday",
+        "0": "Later",
+    }
+
     def on_key(self, event) -> None:
         """Handle key presses."""
         if event.key == "escape":
@@ -365,6 +378,10 @@ class BasketSelectorDialog(ModalScreen[str]):
             if self.selected_index < len(TodoData.BASKETS) - 1:
                 self.selected_index += 1
                 self._update_selection()
+            event.stop()
+        elif event.key in self.QUICK_JUMP_KEYS:
+            # Quick-jump to basket and confirm
+            self.dismiss(self.QUICK_JUMP_KEYS[event.key])
             event.stop()
 
 
@@ -489,7 +506,7 @@ class TodoApp(App):
         Binding("backslash", "undo", "Undo", show=True),
         Binding("?", "show_help", "Help", show=True),
         Binding("escape", "quit", "Quit", show=True),
-        # Quick basket jump keys (` for Inbox, 1-7 for Mon-Sun, = for Later)
+        # Quick basket jump keys (` for Inbox, 1-7 for Mon-Sun, 0 for Later)
         Binding("grave_accent", "jump_inbox", "Inbox", show=False),
         Binding("1", "jump_monday", "Mon", show=False),
         Binding("2", "jump_tuesday", "Tue", show=False),
@@ -498,7 +515,7 @@ class TodoApp(App):
         Binding("5", "jump_friday", "Fri", show=False),
         Binding("6", "jump_saturday", "Sat", show=False),
         Binding("7", "jump_sunday", "Sun", show=False),
-        Binding("equal_sign", "jump_later", "Later", show=False),
+        Binding("0", "jump_later", "Later", show=False),
     ]
 
     def __init__(self):
@@ -706,7 +723,12 @@ class TodoApp(App):
                 self.todo_data.move_task(task.id, basket)
                 self.save_data()
                 if self.task_tree:
+                    # Refresh to rebuild flat_list, then adjust selection if out of bounds
                     self.task_tree.refresh_tasks()
+                    max_idx = len(self.task_tree.flat_list) - 1
+                    if self.task_tree.selected_index > max_idx:
+                        self.task_tree.selected_index = max(0, max_idx)
+                        self.task_tree._render_tasks()
 
         self.push_screen(BasketSelectorDialog(), handle_result)
 
@@ -1043,7 +1065,7 @@ class TodoApp(App):
 [bold underline]Quick Basket Jump:[/bold underline]
   `           Inbox
   1-7         Monday through Sunday
-  =           Later
+  0           Later
 
 [bold underline]Application:[/bold underline]
   Esc         Quit application

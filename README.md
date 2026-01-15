@@ -78,7 +78,7 @@ tltd
 ### Quick Basket Jump
 - `` ` ``: Jump to Inbox
 - `1-7`: Jump to Monday through Sunday
-- `=`: Jump to Later
+- `0`: Jump to Later
 
 ### Application
 - `Esc`: Quit application

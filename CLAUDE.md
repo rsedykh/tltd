@@ -224,7 +224,7 @@ The keybinding system was recently redesigned to be terminal-friendly (avoiding 
 ### Quick Basket Jump
 - **`**: Jump to Inbox
 - **1-7**: Jump to Monday through Sunday
-- **=**: Jump to Later
+- **0**: Jump to Later
 
 ### Other
 - **\**: Undo last action (up to 50 steps)
