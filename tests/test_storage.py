@@ -164,3 +164,108 @@ class TestStorageManager:
         for basket in TodoData.BASKETS:
             assert len(loaded_data.baskets[basket]) == 1
             assert loaded_data.baskets[basket][0].title == f"Task in {basket}"
+
+    def test_json_formatting(self, temp_storage):
+        """Test that saved JSON is properly formatted (indented)."""
+        todo_data = TodoData()
+        task = Task(title="Test Task")
+        todo_data.add_task("Inbox", task)
+
+        temp_storage.save(todo_data)
+
+        # Read raw file and verify it's formatted
+        with open(temp_storage.file_path, 'r') as f:
+            content = f.read()
+
+        # Should contain newlines (formatted JSON)
+        assert '\n' in content
+        # Should be valid JSON
+        parsed = json.loads(content)
+        assert "Inbox" in parsed
+
+    def test_unicode_task_titles(self, temp_storage):
+        """Test saving and loading unicode characters in task titles."""
+        todo_data = TodoData()
+        task = Task(title="Test 日本語 emoji 🎉 スケジュール")
+        todo_data.add_task("Inbox", task)
+
+        temp_storage.save(todo_data)
+        loaded_data = temp_storage.load()
+
+        assert loaded_data.baskets["Inbox"][0].title == "Test 日本語 emoji 🎉 スケジュール"
+
+    def test_deeply_nested_save_load(self, temp_storage):
+        """Test saving and loading deeply nested task structure."""
+        todo_data = TodoData()
+
+        # Create 5 levels of nesting
+        root = Task(title="Level 0")
+        current = root
+        for i in range(1, 5):
+            child = Task(title=f"Level {i}")
+            current.add_child(child)
+            current = child
+
+        todo_data.add_task("Inbox", root)
+        temp_storage.save(todo_data)
+        loaded_data = temp_storage.load()
+
+        # Verify nesting structure
+        loaded = loaded_data.baskets["Inbox"][0]
+        for i in range(5):
+            assert loaded.title == f"Level {i}"
+            if i < 4:
+                assert len(loaded.children) == 1
+                loaded = loaded.children[0]
+
+    def test_empty_baskets_preserved(self, temp_storage):
+        """Test that empty baskets are preserved in save/load."""
+        todo_data = TodoData()
+        # Only add to Inbox, leave others empty
+        task = Task(title="Test")
+        todo_data.add_task("Inbox", task)
+
+        temp_storage.save(todo_data)
+        loaded_data = temp_storage.load()
+
+        # All baskets should exist
+        for basket in TodoData.BASKETS:
+            assert basket in loaded_data.baskets
+
+    def test_multiple_tasks_per_basket(self, temp_storage):
+        """Test saving and loading multiple tasks in same basket."""
+        todo_data = TodoData()
+        for i in range(10):
+            task = Task(title=f"Task {i}")
+            todo_data.add_task("Inbox", task)
+
+        temp_storage.save(todo_data)
+        loaded_data = temp_storage.load()
+
+        assert len(loaded_data.baskets["Inbox"]) == 10
+        for i in range(10):
+            assert loaded_data.baskets["Inbox"][i].title == f"Task {i}"
+
+    def test_task_index_preserved_after_load(self, temp_storage):
+        """Test that task index works after loading from disk."""
+        # Create and save
+        todo_data = TodoData()
+        parent = Task(title="Parent")
+        child = Task(title="Child")
+        parent.add_child(child)
+        todo_data.add_task("Inbox", parent)
+
+        original_parent_id = parent.id
+        original_child_id = child.id
+
+        temp_storage.save(todo_data)
+        loaded_data = temp_storage.load()
+
+        # Index should work for O(1) lookup
+        found_parent = loaded_data.find_task(original_parent_id)
+        found_child = loaded_data.find_task(original_child_id)
+
+        assert found_parent is not None
+        assert found_child is not None
+        assert found_parent.title == "Parent"
+        assert found_child.title == "Child"
