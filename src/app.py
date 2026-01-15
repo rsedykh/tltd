@@ -294,17 +294,28 @@ class BasketPane(Vertical):
     def compose(self) -> ComposeResult:
         """Build the basket list."""
         for basket in TodoData.BASKETS:
+            # Add separator after Inbox and before Later
+            if basket == "Monday":
+                yield Label("───────────", classes="basket-separator")
             count = self.todo_data.get_basket_count(basket)
             label = f"{basket} ({count})"
             widget = Label(label, classes="basket-item")
             if basket == self.selected_basket:
                 widget.add_class("selected")
             yield widget
+            if basket == "Sunday":
+                yield Label("───────────", classes="basket-separator")
 
     def refresh_baskets(self) -> None:
         """Refresh basket counts and selection."""
         self.remove_children()
         for basket in TodoData.BASKETS:
+            # Add separator after Inbox and before Later
+            if basket == "Monday":
+                sep = Label("───────────", classes="basket-separator")
+                if self.show_completed_mode:
+                    sep.add_class("show-completed-mode")
+                self.mount(sep)
             count = self.todo_data.get_basket_count(basket)
             label = f"{basket} ({count})"
             widget = Label(label, classes="basket-item")
@@ -313,6 +324,11 @@ class BasketPane(Vertical):
             if self.show_completed_mode:
                 widget.add_class("show-completed-mode")
             self.mount(widget)
+            if basket == "Sunday":
+                sep = Label("───────────", classes="basket-separator")
+                if self.show_completed_mode:
+                    sep.add_class("show-completed-mode")
+                self.mount(sep)
 
     def select_next(self) -> None:
         """Select next basket."""
@@ -450,6 +466,15 @@ class TodoApp(App):
     .basket-item.selected.show-completed-mode {
         background: #1a1a1a;
         color: #808080;
+    }
+
+    .basket-separator {
+        color: #555555;
+        padding: 0 1;
+    }
+
+    .basket-separator.show-completed-mode {
+        color: #404040;
     }
 
     #dialog-container {
