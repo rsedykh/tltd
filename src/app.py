@@ -520,6 +520,19 @@ class TodoApp(App):
         Binding("6", "jump_saturday", "Sat", show=False),
         Binding("7", "jump_sunday", "Sun", show=False),
         Binding("0", "jump_later", "Later", show=False),
+        # Russian keyboard layout equivalents (ЙЦУКЕН)
+        Binding("с", "add_task", "Create", show=False),  # c
+        Binding("ч", "toggle_complete", "Done", show=False),  # x
+        Binding("а", "move_task", "Move", show=False),  # f
+        Binding("ф", "collapse_task", "Collapse", show=False),  # a
+        Binding("в", "expand_task", "Expand", show=False),  # d
+        Binding("Ф", "collapse_all", "Collapse All", show=False),  # A (Shift+a)
+        Binding("В", "expand_all", "Expand All", show=False),  # D (Shift+d)
+        Binding("ц", "move_task_up", "Up", show=False),  # w
+        Binding("ы", "move_task_down", "Down", show=False),  # s
+        Binding("у", "nest_task", "Nest", show=False),  # e
+        Binding("й", "unnest_task", "Unnest", show=False),  # q
+        Binding("я", "toggle_show_completed", "Show Done", show=False),  # z
     ]
 
     def __init__(self):
