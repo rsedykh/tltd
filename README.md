@@ -75,6 +75,11 @@ tltd
 ### Undo
 - `\`: Undo last action (up to 50 actions)
 
+### Quick Basket Jump
+- `` ` ``: Jump to Inbox
+- `1-7`: Jump to Monday through Sunday
+- `=`: Jump to Later
+
 ### Application
 - `Esc`: Quit application
 - `?`: Show help screen

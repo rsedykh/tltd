@@ -221,6 +221,11 @@ The keybinding system was recently redesigned to be terminal-friendly (avoiding 
 - Intelligently handles nesting boundaries (unnests when needed)
 - **Maintains focus**: When reaching boundaries and unnesting, selection stays on the moved task
 
+### Quick Basket Jump
+- **`**: Jump to Inbox
+- **1-7**: Jump to Monday through Sunday
+- **=**: Jump to Later
+
 ### Other
 - **\**: Undo last action (up to 50 steps)
 - **z**: Toggle show completed tasks

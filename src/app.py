@@ -484,6 +484,16 @@ class TodoApp(App):
         Binding("backslash", "undo", "Undo", show=True),
         Binding("?", "show_help", "Help", show=True),
         Binding("escape", "quit", "Quit", show=True),
+        # Quick basket jump keys (` for Inbox, 1-7 for Mon-Sun, = for Later)
+        Binding("grave_accent", "jump_inbox", "Inbox", show=False),
+        Binding("1", "jump_monday", "Mon", show=False),
+        Binding("2", "jump_tuesday", "Tue", show=False),
+        Binding("3", "jump_wednesday", "Wed", show=False),
+        Binding("4", "jump_thursday", "Thu", show=False),
+        Binding("5", "jump_friday", "Fri", show=False),
+        Binding("6", "jump_saturday", "Sat", show=False),
+        Binding("7", "jump_sunday", "Sun", show=False),
+        Binding("equal_sign", "jump_later", "Later", show=False),
     ]
 
     def __init__(self):
@@ -1025,6 +1035,11 @@ class TodoApp(App):
 [bold underline]Undo:[/bold underline]
   \\          Undo last action (up to 50 actions)
 
+[bold underline]Quick Basket Jump:[/bold underline]
+  `           Inbox
+  1-7         Monday through Sunday
+  =           Later
+
 [bold underline]Application:[/bold underline]
   Esc         Quit application
   ?           Show this help
@@ -1062,3 +1077,49 @@ class TodoApp(App):
             self.task_tree.border_title = self.basket_pane.selected_basket
             self.task_tree.selected_index = 0
             self.task_tree.refresh_tasks()
+
+    def _jump_to_basket(self, basket_name: str) -> None:
+        """Jump directly to a specific basket."""
+        if self.basket_pane and self.task_tree:
+            self.basket_pane.selected_basket = basket_name
+            self.basket_pane.refresh_baskets()
+            self._switch_basket()
+            # Switch focus to tasks panel
+            self.focused_panel = "tasks"
+            self._update_panel_focus()
+
+    def action_jump_inbox(self) -> None:
+        """Jump to Inbox basket."""
+        self._jump_to_basket("Inbox")
+
+    def action_jump_monday(self) -> None:
+        """Jump to Monday basket."""
+        self._jump_to_basket("Monday")
+
+    def action_jump_tuesday(self) -> None:
+        """Jump to Tuesday basket."""
+        self._jump_to_basket("Tuesday")
+
+    def action_jump_wednesday(self) -> None:
+        """Jump to Wednesday basket."""
+        self._jump_to_basket("Wednesday")
+
+    def action_jump_thursday(self) -> None:
+        """Jump to Thursday basket."""
+        self._jump_to_basket("Thursday")
+
+    def action_jump_friday(self) -> None:
+        """Jump to Friday basket."""
+        self._jump_to_basket("Friday")
+
+    def action_jump_saturday(self) -> None:
+        """Jump to Saturday basket."""
+        self._jump_to_basket("Saturday")
+
+    def action_jump_sunday(self) -> None:
+        """Jump to Sunday basket."""
+        self._jump_to_basket("Sunday")
+
+    def action_jump_later(self) -> None:
+        """Jump to Later basket."""
+        self._jump_to_basket("Later")
