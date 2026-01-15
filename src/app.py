@@ -535,6 +535,7 @@ class TodoApp(App):
     def action_undo(self) -> None:
         """Undo the last action."""
         if not self.history:
+            self.notify("Nothing to undo", severity="warning", timeout=2)
             return
 
         # Restore the last state
@@ -551,6 +552,13 @@ class TodoApp(App):
         if self.basket_pane:
             self.basket_pane.todo_data = self.todo_data
             self.basket_pane.refresh_baskets()
+
+        # Show remaining undo steps
+        remaining = len(self.history)
+        if remaining == 0:
+            self.notify("Undone (no more history)", timeout=2)
+        else:
+            self.notify(f"Undone ({remaining} steps remaining)", timeout=2)
 
     def on_task_tree_task_edited(self, message: TaskTree.TaskEdited) -> None:
         """Handle task edit completion from inline editor."""
