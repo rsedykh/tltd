@@ -500,6 +500,8 @@ class TodoApp(App):
         Binding("right", "switch_to_tasks", "▶ Tasks", show=True),
         Binding("a", "collapse_task", "Collapse", show=True),
         Binding("d", "expand_task", "Expand", show=True),
+        Binding("A", "collapse_all", "Collapse All", show=False),
+        Binding("D", "expand_all", "Expand All", show=False),
         Binding("w", "move_task_up", "Move Up", show=True),
         Binding("s", "move_task_down", "Move Down", show=True),
         Binding("e", "nest_task", "Nest →", show=True),
@@ -771,6 +773,40 @@ class TodoApp(App):
             if task and task.children and task.collapsed:
                 self.save_to_history()
                 self.task_tree.toggle_collapse()
+                self.save_data()
+
+    def _collapse_recursive(self, task: Task) -> None:
+        """Recursively collapse a task and all its children."""
+        if task.children:
+            task.collapsed = True
+            for child in task.children:
+                self._collapse_recursive(child)
+
+    def _expand_recursive(self, task: Task) -> None:
+        """Recursively expand a task and all its children."""
+        if task.children:
+            task.collapsed = False
+            for child in task.children:
+                self._expand_recursive(child)
+
+    def action_collapse_all(self) -> None:
+        """Collapse task and all nested children (Shift+A)."""
+        if self.focused_panel == "tasks" and self.task_tree:
+            task = self.task_tree.get_selected_task()
+            if task and task.children:
+                self.save_to_history()
+                self._collapse_recursive(task)
+                self.task_tree.refresh_tasks()
+                self.save_data()
+
+    def action_expand_all(self) -> None:
+        """Expand task and all nested children (Shift+D)."""
+        if self.focused_panel == "tasks" and self.task_tree:
+            task = self.task_tree.get_selected_task()
+            if task and task.children:
+                self.save_to_history()
+                self._expand_recursive(task)
+                self.task_tree.refresh_tasks()
                 self.save_data()
 
     def action_switch_to_baskets(self) -> None:
@@ -1055,6 +1091,8 @@ class TodoApp(App):
 [bold underline]Collapsing:[/bold underline]
   a           Collapse task (hide children)
   d           Expand task (show children)
+  Shift+a     Collapse task and all nested children
+  Shift+d     Expand task and all nested children
   [dim]When collapsed, shows child count like: Task (3)[/dim]
 
 [bold underline]Nesting (children move with task):[/bold underline]
