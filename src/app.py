@@ -1,6 +1,11 @@
 """Main UI application using Textual."""
+from __future__ import annotations
+
 import time
-from typing import Optional, List, Tuple, Dict, Any
+from typing import Optional, List, Tuple, Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Self
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Static, Input, Button, Label, Footer
@@ -57,11 +62,11 @@ class TaskTree(Vertical):
     selected_index: reactive[int] = reactive(0)
     show_completed: reactive[bool] = reactive(False)
 
-    def __init__(self, basket: str, todo_data: TodoData, todo_app=None):
+    def __init__(self, basket: str, todo_data: TodoData, todo_app: Optional[TodoApp] = None):
         super().__init__()
         self.basket = basket
         self.todo_data = todo_data
-        self.todo_app = todo_app  # Reference to TodoApp for recently_completed tracking
+        self.todo_app = todo_app
         self.flat_list: List[Tuple[Task, int]] = []  # (task, level)
         self.border_title = basket
         # Inline editing state
