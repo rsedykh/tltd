@@ -651,15 +651,19 @@ class TodoApp(App):
                             try:
                                 idx = parent.children.index(current_task)
                                 parent.children.insert(idx + 1, task)
+                                self.todo_data._add_to_index(task)
                             except ValueError:
                                 parent.add_child(task)
+                                self.todo_data._add_to_index(task)
                     else:
                         # Task is at root - insert in basket
                         try:
                             idx = self.todo_data.baskets[basket].index(current_task)
                             self.todo_data.baskets[basket].insert(idx + 1, task)
+                            self.todo_data._add_to_index(task)
                         except ValueError:
                             self.todo_data.baskets[basket].append(task)
+                            self.todo_data._add_to_index(task)
             else:
                 # Add to root
                 self.todo_data.add_task(basket, task)
