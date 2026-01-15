@@ -533,6 +533,7 @@ class TodoApp(App):
         Binding("у", "nest_task", "Nest", show=False),  # e
         Binding("й", "unnest_task", "Unnest", show=False),  # q
         Binding("я", "toggle_show_completed", "Show Done", show=False),  # z
+        Binding("ё", "jump_inbox", "Inbox", show=False),  # ` (backtick)
     ]
 
     def __init__(self):
