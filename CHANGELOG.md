@@ -2,6 +2,28 @@
 
 All notable changes to TLTD (Terminal Todo List) are documented in this file.
 
+## 2026-01-17
+
+### Added
+- **Task descriptions**: Optional description field for tasks
+  - Press `v` (or `м` for Russian keyboard) to open editor modal
+  - Descriptions display below task title (dimmed, truncated with "...")
+  - TAB switches between title and description fields
+  - Ctrl+S saves, ESC cancels
+  - 4096 character limit
+  - Backward compatible with existing data files
+- 7 new description tests (67 total)
+
+### Changed
+- Collapse behavior: Collapsing a task now collapses its parent when no children remain visible
+
+### Security
+- Added `rich.markup.escape()` to prevent Rich markup injection in user content
+
+### Fixed
+- Added missing `Tuple` import to app.py
+- README keybinding documentation: `f` → `r` for move task
+
 ## 2026-01-16
 
 ### Added

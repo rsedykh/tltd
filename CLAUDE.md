@@ -22,8 +22,9 @@ TLTD (Terminal Todo List) is a terminal-based todo application with hierarchical
 1. **Sanity Check Sweep**: Review modified files for dead code, unused imports, naming issues, TODO comments
 2. **Run Tests**: `source venv/bin/activate && python3 -m pytest tests/ -v` (all must pass)
 3. **Update HANDOFF.md**: Summarize accomplishments, note unfinished work
-4. **Commit**: Descriptive message with `Co-Authored-By: Claude <noreply@anthropic.com>`
-5. **Push**: `git push` to sync changes to remote
+4. **Update CHANGELOG.md**: Add new features, changes, fixes under today's date
+5. **Commit**: Descriptive message with `Co-Authored-By: Claude <noreply@anthropic.com>`
+6. **Push**: `git push` to sync changes to remote
 
 ---
 
@@ -117,7 +118,7 @@ The w/s keys (move up/down) call `action_unnest_task()` when task reaches top/bo
 
 **Russian keyboard mapping** (ЙЦУКЕН layout, same physical keys):
 ```
-c→с  a→ф  d→в  e→у  q→й  w→ц  s→ы  x→ч  z→я  r→к  `→ё
+c→с  a→ф  d→в  e→у  q→й  w→ц  s→ы  x→ч  z→я  r→к  v→м  `→ё
 Shift variants: С Ф В У Й Ц Ы Ч Я А
 ```
 
@@ -138,7 +139,7 @@ source venv/bin/activate && python3 -m pytest tests/ -v
 source venv/bin/activate && python src/main.py & sleep 2 && kill $! 2>/dev/null && echo "✓ App launched"
 ```
 
-- ✅ 60 tests (models, storage, edge cases)
+- ✅ 67 tests (models, storage, edge cases)
 - ⚠️ UI: Manual testing only (see TESTING.md)
 
 Run tests after: new features, refactoring, model/storage changes, session end.
