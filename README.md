@@ -14,32 +14,40 @@ A terminal-based todo application with hierarchical tasks, inspired by Workflowy
 
 ## Installation
 
-1. Create a virtual environment (recommended):
+### Using pipx (recommended)
+
 ```bash
+pipx install git+https://github.com/rsedykh/tltd.git
+```
+
+Then run with:
+```bash
+tltd
+```
+
+### Development setup
+
+1. Clone and create a virtual environment:
+```bash
+git clone https://github.com/rsedykh/tltd.git
+cd tltd
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-2. Install dependencies:
+2. Install in editable mode:
 ```bash
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
 
-3. Run tests (optional):
+3. Run tests:
 ```bash
 pytest tests/ -v
 ```
 
 ## Usage
 
-Run the application:
 ```bash
-python3 src/main.py
-```
-
-Or install and run as a command:
-```bash
-pip install -e .
 tltd
 ```
 
