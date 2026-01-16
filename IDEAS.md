@@ -26,6 +26,12 @@ This document contains feature suggestions for future development, organized by 
 - **Export to CSV**: For spreadsheet workflows
 - **Import from other formats**: Todoist, Things, plain text
 
+### Weekly Reset
+- **Week number display**: Show "Monday W03/25" format on weekday baskets
+- **Auto-reset on new week**: When week changes, move all uncompleted tasks from Mon-Sun to Inbox
+- **Fresh start**: Begin each week with empty weekday baskets, plan from Inbox
+- **Optional confirmation**: Ask before moving or do it silently on first launch of new week
+
 ### Recurring Tasks
 - **Daily/Weekly recurrence**: Task reappears after completion
 - **Custom intervals**: Every N days
