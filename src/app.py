@@ -760,6 +760,10 @@ class TodoApp(App):
             self.todo_data.delete_task(task.id)
             self.save_data()
             self.task_tree.refresh_tasks()
+            # If basket is now empty, switch focus to baskets panel
+            if not self.task_tree.flat_list:
+                self.focused_panel = "baskets"
+                self._update_panel_focus()
             # Adjust selection if now out of bounds (deleted last task)
             max_idx = len(self.task_tree.flat_list) - 1
             if self.task_tree.selected_index > max_idx:
@@ -783,6 +787,10 @@ class TodoApp(App):
                 if self.task_tree:
                     # Refresh to rebuild flat_list, then adjust selection if out of bounds
                     self.task_tree.refresh_tasks()
+                    # If basket is now empty, switch focus to baskets panel
+                    if not self.task_tree.flat_list:
+                        self.focused_panel = "baskets"
+                        self._update_panel_focus()
                     max_idx = len(self.task_tree.flat_list) - 1
                     if self.task_tree.selected_index > max_idx:
                         self.task_tree.selected_index = max(0, max_idx)
