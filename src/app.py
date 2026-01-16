@@ -836,13 +836,30 @@ class TodoApp(App):
             self.task_tree.move_selection(1)
 
     def action_collapse_task(self) -> None:
-        """Collapse task."""
+        """Collapse task, or if no children/already collapsed, collapse parent and focus on it."""
         if self.focused_panel == "tasks" and self.task_tree:
             task = self.task_tree.get_selected_task()
-            if task and task.children and not task.collapsed:
+            if not task:
+                return
+
+            # If task has children and is not collapsed, collapse it
+            if task.children and not task.collapsed:
                 self.save_to_history()
                 self.task_tree.toggle_collapse()
                 self.save_data()
+            else:
+                # Task has no children or is already collapsed - collapse parent instead
+                location = self.todo_data.find_task_location(task.id)
+                if location:
+                    _, parent_id = location
+                    if parent_id:
+                        parent_task = self.todo_data.find_task(parent_id)
+                        if parent_task and not parent_task.collapsed:
+                            self.save_to_history()
+                            parent_task.collapsed = True
+                            self.task_tree.refresh_tasks()
+                            self._focus_task_by_id(parent_id)
+                            self.save_data()
 
     def action_expand_task(self) -> None:
         """Expand task."""
