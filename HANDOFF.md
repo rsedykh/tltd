@@ -2,7 +2,29 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Performance, UX & Keyboard Support)
+## Latest Session (UX Improvements)
+
+**Changes implemented:**
+
+1. **Auto-focus baskets when basket empty**:
+   - When deleting or moving the last task from a basket, focus switches to baskets panel
+   - User typically wants to navigate to a different basket next
+
+2. **Shift+C quick-add to Inbox**:
+   - Creates a new task at the bottom of Inbox from any basket
+   - Finds last root-level task (ignoring nested children) and inserts after it
+   - Russian keyboard support: Shift+С
+
+3. **Documentation updates**:
+   - README.md: Changed `python` to `python3`
+   - IDEAS.md: Added "Weekly Reset" feature idea (week numbers, auto-move uncompleted tasks)
+   - Help screen: Added Shift+C keybinding
+
+4. **All 60 tests passing**
+
+---
+
+## Previous Session (Performance, UX & Keyboard Support)
 
 **Major improvements implemented:**
 
