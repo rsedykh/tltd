@@ -2,10 +2,7 @@
 from __future__ import annotations
 
 import time
-from typing import Optional, List, Tuple, Dict, Any, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Self
+from typing import Optional, List, Dict, Any
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Static, Input, Button, Label, Footer
@@ -764,7 +761,7 @@ class TodoApp(App):
                 self.recently_completed[task.id] = time.time()
                 # Schedule refresh after 5 seconds
                 self.set_timer(5.0, lambda: self._cleanup_completed_task(task.id))
-            elif was_completed:
+            else:
                 # About to uncomplete the task - remove from tracking
                 self.recently_completed.pop(task.id, None)
 

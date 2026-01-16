@@ -1,5 +1,6 @@
 """Storage management for persisting todo data."""
 import json
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -17,7 +18,7 @@ class StorageManager:
 
     def ensure_directory(self) -> None:
         """Create the storage directory if it doesn't exist."""
-        self.file_path.parent.mkdir(parents=True, exist_ok=True)
+        self.file_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
 
     def load(self) -> TodoData:
         """
@@ -54,6 +55,9 @@ class StorageManager:
             with open(temp_path, 'w', encoding='utf-8') as f:
                 json.dump(todo_data.to_dict(), f, indent=2, ensure_ascii=False)
 
+            # Set restrictive permissions before rename
+            os.chmod(temp_path, 0o600)
+
             # Atomic rename
             temp_path.replace(self.file_path)
             return True
@@ -70,7 +74,7 @@ class StorageManager:
             return False
 
         try:
-            backup_path = self.file_path.with_suffix(f'.json.backup')
+            backup_path = self.file_path.with_suffix('.json.backup')
             with open(self.file_path, 'r') as src:
                 with open(backup_path, 'w') as dst:
                     dst.write(src.read())
