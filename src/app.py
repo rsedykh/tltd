@@ -521,6 +521,7 @@ class TodoApp(App):
 
     BINDINGS = [
         Binding("c", "add_task", "Create", show=True),
+        Binding("C", "add_task_to_inbox", "Create in Inbox", show=False),
         Binding("enter", "edit_task", "Edit", show=True),
         Binding("x", "toggle_complete", "✓ Done", show=True),
         Binding("backspace", "delete_task", "Delete", show=True),
@@ -553,6 +554,7 @@ class TodoApp(App):
         Binding("0", "jump_later", "Later", show=False),
         # Russian keyboard layout equivalents (ЙЦУКЕН)
         Binding("с", "add_task", "Create", show=False),  # c
+        Binding("С", "add_task_to_inbox", "Create in Inbox", show=False),  # C (Shift+c)
         Binding("ч", "toggle_complete", "Done", show=False),  # x
         Binding("а", "move_task", "Move", show=False),  # f
         Binding("ф", "collapse_task", "Collapse", show=False),  # a
@@ -712,6 +714,18 @@ class TodoApp(App):
                 idx = 0
                 level = 0
             self.task_tree.start_create_task(at_index=idx, level=level)
+
+    def action_add_task_to_inbox(self) -> None:
+        """Add a new task to Inbox regardless of current basket."""
+        if self.task_tree and self.basket_pane:
+            # Switch to Inbox
+            self.basket_pane.selected_basket = "Inbox"
+            self.basket_pane.refresh_baskets()
+            self._switch_basket()
+            self.focused_panel = "tasks"
+            self._update_panel_focus()
+            # Create task at the top of Inbox (root level)
+            self.task_tree.start_create_task(at_index=0, level=0)
 
     def action_edit_task(self) -> None:
         """Edit the selected task (inline editing)."""
@@ -1138,6 +1152,7 @@ class TodoApp(App):
 
 [bold underline]Task Actions:[/bold underline]
   c           Create new task below current (inline editor, same nesting level)
+  Shift+c     Create new task in Inbox (from any basket)
   Enter       Edit selected task (inline editor)
   x           Toggle task completion (✓/☐)
   Backspace   Delete task and all children
