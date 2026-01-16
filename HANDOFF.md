@@ -2,7 +2,25 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Keybind Change)
+## Latest Session (pipx Packaging)
+
+**Changes implemented:**
+
+1. **Added pipx support with modern Python packaging**:
+   - Created `pyproject.toml` with full metadata, classifiers, and entry points
+   - Removed legacy `setup.py` (no longer needed)
+   - Added `[project.optional-dependencies]` for dev dependencies (pytest)
+
+2. **Updated README installation instructions**:
+   - pipx install from GitHub as recommended method
+   - Reorganized development setup section
+   - Simplified usage section
+
+3. **All 60 tests passing**
+
+---
+
+## Previous Session (Keybind Change)
 
 **Changes implemented:**
 
