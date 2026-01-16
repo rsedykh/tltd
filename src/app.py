@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import time
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Static, Input, Button, Label, Footer
+from textual.widgets import Static, Input, Button, Label, Footer, TextArea
+from rich.markup import escape as escape_markup
 from textual.binding import Binding
 from textual.message import Message
 from textual.screen import ModalScreen
@@ -18,7 +19,7 @@ from .storage import StorageManager
 class TaskLine(Static):
     """A single task line in the tree."""
 
-    def __init__(self, task: Task, level: int, show_completed: bool = False):
+    def __init__(self, task: Task, level: int, show_completed: bool = False, max_width: int = 80):
         indent = "  " * level
 
         # Collapse indicator
@@ -40,11 +41,32 @@ class TaskLine(Static):
                 visible_count = sum(1 for child in task.children if not child.completed)
             child_count = f" ({visible_count})"
 
+        # Escape user content to prevent Rich markup injection
+        escaped_title = escape_markup(task.title)
+
         # Build the display text with strikethrough for completed tasks
         if task.completed:
-            content = f"{indent}{collapse_icon} {check} [strike]{task.title}[/strike]{child_count}"
+            content = f"{indent}{collapse_icon} {check} [strike]{escaped_title}[/strike]{child_count}"
         else:
-            content = f"{indent}{collapse_icon} {check} {task.title}{child_count}"
+            content = f"{indent}{collapse_icon} {check} {escaped_title}{child_count}"
+
+        # Add description line if present
+        if task.description:
+            # Description indent: align with title text (after collapse + check + space)
+            desc_indent = indent + "    "  # 4 spaces to align under title
+            # Get first line of description
+            first_line = task.description.split('\n')[0]
+            has_more_lines = '\n' in task.description
+            # Calculate available width for description
+            available_width = max_width - len(desc_indent) - 3  # -3 for "..."
+            # Truncate if needed
+            if len(first_line) > available_width or has_more_lines:
+                truncated = first_line[:available_width].rstrip() + "..."
+            else:
+                truncated = first_line
+            # Escape description to prevent Rich markup injection
+            escaped_desc = escape_markup(truncated)
+            content += f"\n{desc_indent}[dim]{escaped_desc}[/dim]"
 
         super().__init__(content)
 
@@ -158,7 +180,12 @@ class TaskTree(Vertical):
                 rendered_editor = True
             else:
                 # Regular task line
-                line = TaskLine(task, level, self.show_completed)
+                # Get terminal width, default to 80 if not available
+                try:
+                    max_width = self.app.size.width - 25  # Account for basket pane and padding
+                except Exception:
+                    max_width = 80
+                line = TaskLine(task, level, self.show_completed, max_width)
                 if i == self.selected_index and self.editing_index is None:
                     line.add_class("selected")
                 container.mount(line)
@@ -406,6 +433,84 @@ class BasketSelectorDialog(ModalScreen[str]):
             event.stop()
 
 
+class DescriptionEditorDialog(ModalScreen[Tuple[str, str]]):
+    """Modal dialog for editing task title and description."""
+
+    def __init__(self, task_title: str, current_description: str):
+        super().__init__()
+        self.task_title = task_title
+        self.current_description = current_description
+
+    def compose(self) -> ComposeResult:
+        with Container(id="description-dialog-container"):
+            yield Input(value=self.task_title, id="title-editor")
+            yield TextArea(self.current_description, id="description-editor")
+            yield Label("[dim]TAB to switch, Ctrl+S to save, ESC to cancel[/dim]", id="description-hint")
+
+    def on_mount(self) -> None:
+        """Focus the description text area when dialog opens."""
+        text_area = self.query_one("#description-editor", TextArea)
+        text_area.focus()
+        # Move cursor to the very end of text
+        if self.current_description:
+            lines = self.current_description.split('\n')
+            last_line_idx = len(lines) - 1
+            last_line_len = len(lines[-1])
+            text_area.cursor_location = (last_line_idx, last_line_len)
+
+    def on_key(self, event) -> None:
+        """Handle key presses."""
+        if event.key == "escape":
+            self.dismiss(None)  # None signals cancel
+            event.stop()
+        elif event.key == "tab":
+            # Handle TAB manually to control cursor position
+            title_input = self.query_one("#title-editor", Input)
+            text_area = self.query_one("#description-editor", TextArea)
+
+            # Check which widget currently has focus and switch
+            if text_area.has_focus:
+                title_input.focus()
+                # Move cursor to end without selection (like inline editing)
+                def deselect():
+                    try:
+                        if title_input.is_mounted:
+                            title_input.action_end()
+                    except Exception:
+                        pass
+                self.set_timer(0.01, deselect)
+            else:
+                text_area.focus()
+            event.stop()
+        elif event.key == "shift+tab":
+            # Handle Shift+TAB (reverse direction)
+            title_input = self.query_one("#title-editor", Input)
+            text_area = self.query_one("#description-editor", TextArea)
+
+            if title_input.has_focus:
+                text_area.focus()
+            else:
+                title_input.focus()
+                def deselect():
+                    try:
+                        if title_input.is_mounted:
+                            title_input.action_end()
+                    except Exception:
+                        pass
+                self.set_timer(0.01, deselect)
+            event.stop()
+        elif event.key == "ctrl+s":
+            title_input = self.query_one("#title-editor", Input)
+            text_area = self.query_one("#description-editor", TextArea)
+            new_title = title_input.value.strip()
+            if not new_title:
+                self.notify("Title cannot be empty", severity="warning", timeout=2)
+                event.stop()
+                return
+            self.dismiss((new_title, text_area.text))
+            event.stop()
+
+
 class TodoApp(App):
     """Main todo application."""
 
@@ -511,6 +616,30 @@ class TodoApp(App):
         margin-bottom: 1;
     }
 
+    #description-dialog-container {
+        width: 70;
+        height: auto;
+        max-height: 20;
+        background: $surface;
+        border: thick $primary;
+        padding: 1 2;
+    }
+
+    #title-editor {
+        width: 100%;
+        margin-bottom: 1;
+    }
+
+    #description-editor {
+        width: 100%;
+        height: 10;
+        margin-bottom: 1;
+    }
+
+    #description-hint {
+        width: 100%;
+    }
+
     Footer {
         height: auto;
     }
@@ -520,6 +649,7 @@ class TodoApp(App):
         Binding("c", "add_task", "Create", show=True),
         Binding("C", "add_task_to_inbox", "Create in Inbox", show=False),
         Binding("enter", "edit_task", "Edit", show=True),
+        Binding("v", "edit_description", "Description", show=True),
         Binding("x", "toggle_complete", "✓ Done", show=True),
         Binding("backspace", "delete_task", "Delete", show=True),
         Binding("r", "move_task", "Move to Basket", show=True),
@@ -550,6 +680,7 @@ class TodoApp(App):
         Binding("7", "jump_sunday", "Sun", show=False),
         Binding("0", "jump_later", "Later", show=False),
         # Russian keyboard layout equivalents (ЙЦУКЕН)
+        Binding("м", "edit_description", "Description", show=False),  # v
         Binding("с", "add_task", "Create", show=False),  # c
         Binding("С", "add_task_to_inbox", "Create in Inbox", show=False),  # C (Shift+c)
         Binding("ч", "toggle_complete", "Done", show=False),  # x
@@ -744,6 +875,41 @@ class TodoApp(App):
             return
 
         self.task_tree.start_edit_task(task.id, task.title)
+
+    MAX_DESCRIPTION_LENGTH = 4096
+
+    def action_edit_description(self) -> None:
+        """Edit the title and description of the selected task."""
+        if not self.task_tree:
+            return
+
+        task = self.task_tree.get_selected_task()
+        if not task:
+            return
+
+        def handle_result(result: Optional[Tuple[str, str]]) -> None:
+            if result is not None:  # None means cancelled
+                new_title, new_description = result
+                if len(new_description) > self.MAX_DESCRIPTION_LENGTH:
+                    self.notify(
+                        f"Description too long (max {self.MAX_DESCRIPTION_LENGTH} chars)",
+                        severity="warning",
+                        timeout=3
+                    )
+                    return
+                # Only save if something changed
+                if new_title != task.title or new_description != task.description:
+                    self.save_to_history()
+                    task.title = new_title
+                    task.description = new_description
+                    self.save_data()
+                    if self.task_tree:
+                        self.task_tree.refresh_tasks()
+
+        self.push_screen(
+            DescriptionEditorDialog(task.title, task.description),
+            handle_result
+        )
 
     def action_toggle_complete(self) -> None:
         """Toggle completion of selected task."""
@@ -1178,6 +1344,7 @@ class TodoApp(App):
   c           Create new task below current (inline editor, same nesting level)
   Shift+c     Create new task in Inbox (from any basket)
   Enter       Edit selected task (inline editor)
+  v           Edit task (Ctrl+S to save, ESC to cancel)
   x           Toggle task completion (✓/☐)
   Backspace   Delete task and all children
   r           Move task to different basket

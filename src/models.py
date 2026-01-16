@@ -14,7 +14,8 @@ class Task:
         completed: bool = False,
         collapsed: bool = False,
         children: Optional[List['Task']] = None,
-        created_at: Optional[str] = None
+        created_at: Optional[str] = None,
+        description: str = ""
     ):
         self.id = task_id or str(uuid.uuid4())
         self.title = title
@@ -22,6 +23,7 @@ class Task:
         self.collapsed = collapsed
         self.children = children or []
         self.created_at = created_at or datetime.now().isoformat()
+        self.description = description
 
     def add_child(self, task: 'Task') -> None:
         """Add a child task."""
@@ -65,7 +67,8 @@ class Task:
             'completed': self.completed,
             'collapsed': self.collapsed,
             'children': [child.to_dict() for child in self.children],
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'description': self.description
         }
 
     @classmethod
@@ -78,7 +81,8 @@ class Task:
             completed=data.get('completed', False),
             collapsed=data.get('collapsed', False),
             children=children,
-            created_at=data.get('created_at')
+            created_at=data.get('created_at'),
+            description=data.get('description', '')
         )
 
     def __repr__(self) -> str:

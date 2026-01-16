@@ -62,9 +62,10 @@ tltd
 ### Task Actions
 - `c`: Create new task below current (inline editor, same nesting level)
 - `Enter`: Edit selected task (inline editor)
+- `v`: Edit task details (Ctrl+S to save, ESC to cancel)
 - `x`: Toggle task completion
 - `Backspace`: Delete task and all children
-- `f`: Move task to different basket
+- `r`: Move task to different basket
 - `z`: Toggle "show completed tasks"
 - `Esc`: Cancel inline editing
 

@@ -480,3 +480,71 @@ class TestTaskIndex:
 
         # Child should be in index
         assert todo_data.find_task(child.id) is child
+
+
+class TestTaskDescription:
+    """Tests for task description functionality."""
+
+    def test_task_creation_with_description(self):
+        """Test creating a task with a description."""
+        task = Task(title="Test Task", description="This is a description")
+        assert task.title == "Test Task"
+        assert task.description == "This is a description"
+
+    def test_task_default_empty_description(self):
+        """Test that description defaults to empty string."""
+        task = Task(title="Test Task")
+        assert task.description == ""
+
+    def test_description_to_dict(self):
+        """Test that description is included in serialization."""
+        task = Task(title="Test", description="My description")
+        data = task.to_dict()
+        assert data['description'] == "My description"
+
+    def test_description_from_dict(self):
+        """Test deserializing task with description."""
+        data = {
+            'id': 'test-id',
+            'title': 'Test Task',
+            'completed': False,
+            'collapsed': False,
+            'children': [],
+            'created_at': '2024-01-01T00:00:00',
+            'description': 'Task description here'
+        }
+        task = Task.from_dict(data)
+        assert task.description == 'Task description here'
+
+    def test_description_backward_compatibility(self):
+        """Test that old JSON without description field works."""
+        data = {
+            'id': 'test-id',
+            'title': 'Old Task',
+            'completed': False,
+            'collapsed': False,
+            'children': [],
+            'created_at': '2024-01-01T00:00:00'
+            # Note: no 'description' field
+        }
+        task = Task.from_dict(data)
+        assert task.description == ""
+
+    def test_description_serialization_roundtrip(self):
+        """Test that description survives serialization roundtrip."""
+        original = Task(title="Test", description="Multi-line\ndescription\nhere")
+        data = original.to_dict()
+        restored = Task.from_dict(data)
+        assert restored.description == original.description
+
+    def test_tododata_preserves_description(self):
+        """Test that TodoData serialization preserves descriptions."""
+        todo_data = TodoData()
+        task = Task(title="Test", description="Important notes")
+        todo_data.add_task("Inbox", task)
+
+        data = todo_data.to_dict()
+        restored = TodoData.from_dict(data)
+
+        restored_task = restored.baskets["Inbox"][0]
+        assert restored_task.description == "Important notes"

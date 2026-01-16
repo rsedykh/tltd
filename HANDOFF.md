@@ -2,7 +2,37 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (pipx Packaging)
+## Latest Session (Task Descriptions Feature)
+
+**Major feature implemented:**
+
+1. **Task descriptions**:
+   - Added `description` field to Task model with backward compatibility
+   - Descriptions display below task title (dimmed, truncated with "...")
+   - Press `v` to open description editor modal
+   - Modal allows editing both title and description
+   - TAB switches between title and description fields
+   - Ctrl+S saves, ESC cancels
+   - 4096 character limit on descriptions
+   - Russian keyboard support: `м` key
+
+2. **Security improvements**:
+   - Added `rich.markup.escape()` to prevent Rich markup injection in user content
+   - Escapes task titles and descriptions before rendering
+
+3. **Type annotation fix**:
+   - Added missing `Tuple` import to app.py
+
+4. **Bug fix**:
+   - Fixed README keybinding: `f` → `r` for move task
+
+5. **Tests**:
+   - Added 7 new description tests (67 total, all passing)
+   - Tests cover creation, serialization, backward compatibility
+
+---
+
+## Previous Session (pipx Packaging)
 
 **Changes implemented:**
 

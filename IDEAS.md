@@ -10,10 +10,10 @@ This document contains feature suggestions for future development, organized by 
 - **Bulk move**: Move selected tasks to another basket
 - **Bulk delete**: Delete multiple tasks at once
 
-### Task Notes/Descriptions
-- **Multi-line descriptions**: Press `v` on a task to add/edit a longer description
-- **Collapsible notes**: Show first line in tree, expand to see full note
-- **Markdown support**: Basic formatting in notes (bold, italic, lists)
+### ~~Task Notes/Descriptions~~ ✅ IMPLEMENTED
+- ~~**Multi-line descriptions**: Press `v` on a task to add/edit a longer description~~
+- ~~**Collapsible notes**: Show first line in tree, expand to see full note~~
+- **Markdown support**: Basic formatting in notes (bold, italic, lists) - *not yet*
 
 ### Search and Filter
 - **Global search**: Press `/` to open search, filter tasks across all baskets by title
@@ -112,15 +112,16 @@ This document contains feature suggestions for future development, organized by 
 If implementing these features, consider this order:
 
 1. **Search** - High value, medium effort, improves usability significantly
-2. **Task notes** - Common user request, enhances task detail
-3. **Export formats** - Data portability is important
-4. **Custom baskets** - Flexibility for different workflows
-5. **Due dates** - Enables time-based task management
+2. **Export formats** - Data portability is important
+3. **Custom baskets** - Flexibility for different workflows
+4. **Due dates** - Enables time-based task management
+
+*(Task notes - completed)*
 
 ### Technical Considerations
 
 - **Search**: Could use simple substring matching initially, upgrade to fuzzy matching later
-- **Notes**: Store as additional field in Task model, update JSON schema
+- ~~**Notes**: Store as additional field in Task model, update JSON schema~~ ✅ Done
 - **Custom baskets**: Replace hardcoded `BASKETS` list with user configuration
 - **Due dates**: Add `due_date: Optional[str]` field, implement date parsing
 - **Cloud sync**: Consider existing sync protocols (WebDAV, CalDAV for tasks)
@@ -129,7 +130,7 @@ If implementing these features, consider this order:
 
 Some features may require data migration:
 - Custom baskets: Need to handle case where saved data has baskets not in config
-- Task notes: Need to add field to existing tasks (default to empty string)
+- ~~Task notes: Need to add field to existing tasks (default to empty string)~~ ✅ Done
 - Due dates: Need to add field to existing tasks (default to None)
 
 Always implement backwards-compatible loading with sensible defaults.
