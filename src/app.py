@@ -724,8 +724,9 @@ class TodoApp(App):
             self._switch_basket()
             self.focused_panel = "tasks"
             self._update_panel_focus()
-            # Create task at the top of Inbox (root level)
-            self.task_tree.start_create_task(at_index=0, level=0)
+            # Create task at the bottom of Inbox (root level)
+            idx = len(self.task_tree.flat_list)
+            self.task_tree.start_create_task(at_index=idx, level=0)
 
     def action_edit_task(self) -> None:
         """Edit the selected task (inline editing)."""
