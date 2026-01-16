@@ -34,7 +34,7 @@ pytest tests/ -v
 
 Run the application:
 ```bash
-python src/main.py
+python3 src/main.py
 ```
 
 Or install and run as a command:
