@@ -2,7 +2,25 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (UX Improvements)
+## Latest Session (Keybind Change)
+
+**Changes implemented:**
+
+1. **Move task keybind changed from `f` to `r`**:
+   - `r` now opens the basket selector to move a task
+   - Russian keyboard equivalent updated: `к` (was `а`)
+   - Help screen updated
+
+2. **Code cleanup (previous commit)**:
+   - Removed unused imports from app.py
+   - Added restrictive file permissions (0o700 for directory, 0o600 for data file)
+   - Simplified completion tracking logic
+
+3. **All 60 tests passing**
+
+---
+
+## Previous Session (UX Improvements)
 
 **Changes implemented:**
 

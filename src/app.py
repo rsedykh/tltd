@@ -522,7 +522,7 @@ class TodoApp(App):
         Binding("enter", "edit_task", "Edit", show=True),
         Binding("x", "toggle_complete", "✓ Done", show=True),
         Binding("backspace", "delete_task", "Delete", show=True),
-        Binding("f", "move_task", "Move to Basket", show=True),
+        Binding("r", "move_task", "Move to Basket", show=True),
         Binding("up", "navigate_up", "↑", show=False),
         Binding("down", "navigate_down", "↓", show=False),
         Binding("left", "switch_to_baskets", "◀ Baskets", show=True),
@@ -553,7 +553,7 @@ class TodoApp(App):
         Binding("с", "add_task", "Create", show=False),  # c
         Binding("С", "add_task_to_inbox", "Create in Inbox", show=False),  # C (Shift+c)
         Binding("ч", "toggle_complete", "Done", show=False),  # x
-        Binding("а", "move_task", "Move", show=False),  # f
+        Binding("к", "move_task", "Move", show=False),  # r
         Binding("ф", "collapse_task", "Collapse", show=False),  # a
         Binding("в", "expand_task", "Expand", show=False),  # d
         Binding("Ф", "collapse_all", "Collapse All", show=False),  # A (Shift+a)
@@ -1163,7 +1163,7 @@ class TodoApp(App):
   Enter       Edit selected task (inline editor)
   x           Toggle task completion (✓/☐)
   Backspace   Delete task and all children
-  f           Move task to different basket
+  r           Move task to different basket
   z           Toggle show completed tasks
   Esc         Cancel inline editing
 
