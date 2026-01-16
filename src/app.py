@@ -724,9 +724,18 @@ class TodoApp(App):
             self._switch_basket()
             self.focused_panel = "tasks"
             self._update_panel_focus()
-            # Create task at the bottom of Inbox (root level)
-            idx = len(self.task_tree.flat_list)
-            self.task_tree.start_create_task(at_index=idx, level=0)
+            # Find the last root-level task to insert after it
+            last_root_idx = -1
+            for i, (task, level) in enumerate(self.task_tree.flat_list):
+                if level == 0:
+                    last_root_idx = i
+            if last_root_idx >= 0:
+                # Select the last root task, then create after it
+                self.task_tree.selected_index = last_root_idx
+                self.task_tree.start_create_task(at_index=last_root_idx + 1, level=0)
+            else:
+                # Empty basket - just create at root
+                self.task_tree.start_create_task(at_index=0, level=0)
 
     def action_edit_task(self) -> None:
         """Edit the selected task (inline editing)."""
