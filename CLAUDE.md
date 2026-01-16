@@ -8,7 +8,12 @@ TLTD (Terminal Todo List) is a terminal-based todo application with hierarchical
 
 **Status**: Fully functional MVP with undo, inline editing, Russian keyboard support.
 
-**Start of session**: Read `HANDOFF.md` for recent changes and context.
+## Session Start Protocol
+
+**When starting a new session, AUTOMATICALLY perform:**
+
+1. **Pull latest changes**: `git pull` to get any changes from remote
+2. **Read HANDOFF.md**: For recent changes and context
 
 ## Session End Protocol ⚠️ CRITICAL
 
@@ -18,6 +23,7 @@ TLTD (Terminal Todo List) is a terminal-based todo application with hierarchical
 2. **Run Tests**: `source venv/bin/activate && python3 -m pytest tests/ -v` (all must pass)
 3. **Update HANDOFF.md**: Summarize accomplishments, note unfinished work
 4. **Commit**: Descriptive message with `Co-Authored-By: Claude <noreply@anthropic.com>`
+5. **Push**: `git push` to sync changes to remote
 
 ---
 
@@ -111,7 +117,7 @@ The w/s keys (move up/down) call `action_unnest_task()` when task reaches top/bo
 
 **Russian keyboard mapping** (ЙЦУКЕН layout, same physical keys):
 ```
-c→с  a→ф  d→в  e→у  q→й  w→ц  s→ы  x→ч  z→я  f→а  `→ё
+c→с  a→ф  d→в  e→у  q→й  w→ц  s→ы  x→ч  z→я  r→к  `→ё
 Shift variants: С Ф В У Й Ц Ы Ч Я А
 ```
 
