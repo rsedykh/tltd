@@ -7,6 +7,7 @@ from typing import List, Optional, Dict, Any, Tuple
 # Input validation limits (enforced on load for defense-in-depth)
 MAX_TITLE_LENGTH = 512
 MAX_DESCRIPTION_LENGTH = 4096
+MAX_NESTING_DEPTH = 8
 
 # Fixed baskets that don't change
 FIXED_BASKETS = ['Inbox', 'Later']

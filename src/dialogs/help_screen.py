@@ -22,7 +22,6 @@ HELP_TEXT = """
   v           Edit task (Ctrl+S to save, ESC to cancel)
   x           Toggle task completion (✓/☐)
   Backspace   Delete task and all children
-  r           Move task to different basket
   z           Toggle show completed tasks
   Esc         Cancel inline editing
 
@@ -46,9 +45,9 @@ HELP_TEXT = """
   \\          Undo last action (up to 50 actions)
 
 [bold underline]Multi-Select:[/bold underline]
-  b           Mark/unmark task
+  r           Mark/unmark task
   Esc         Clear all marks
-  [dim]When marked: x/r/Backspace apply to all[/dim]
+  [dim]When marked: x/Backspace/number keys apply to all[/dim]
 
 [bold underline]Quick Move / Basket Jump:[/bold underline]
   `           Inbox

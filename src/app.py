@@ -8,7 +8,10 @@ from textual.containers import Horizontal
 from textual.widgets import Footer
 from textual.binding import Binding
 
-from .models import TodoData, Task, get_current_week_dates, date_to_display_name, is_date_basket
+from .models import (
+    TodoData, Task, get_current_week_dates, date_to_display_name, is_date_basket,
+    MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH, MAX_NESTING_DEPTH
+)
 from .storage import StorageManager
 from .styles import CSS
 from .widgets import TaskTree, BasketPane
@@ -271,10 +274,6 @@ class TodoApp(App):
 
         self.task_tree.start_edit_task(task.id, task.title)
 
-    MAX_TITLE_LENGTH = 512
-    MAX_DESCRIPTION_LENGTH = 4096
-    MAX_NESTING_DEPTH = 8
-
     def action_edit_description(self) -> None:
         """Edit the title and description of the selected task."""
         if not self.task_tree:
@@ -287,9 +286,9 @@ class TodoApp(App):
         def handle_result(result: Optional[Tuple[str, str]]) -> None:
             if result is not None:  # None means cancelled
                 new_title, new_description = result
-                if len(new_description) > self.MAX_DESCRIPTION_LENGTH:
+                if len(new_description) > MAX_DESCRIPTION_LENGTH:
                     self.notify(
-                        f"Description too long (max {self.MAX_DESCRIPTION_LENGTH} chars)",
+                        f"Description too long (max {MAX_DESCRIPTION_LENGTH} chars)",
                         severity="warning",
                         timeout=3
                     )
@@ -537,8 +536,8 @@ class TodoApp(App):
         current_task, current_level = self.task_tree.flat_list[idx]
 
         # Check nesting depth limit
-        if current_level >= self.MAX_NESTING_DEPTH - 1:
-            self.notify(f"Maximum nesting depth ({self.MAX_NESTING_DEPTH}) reached", severity="warning", timeout=2)
+        if current_level >= MAX_NESTING_DEPTH - 1:
+            self.notify(f"Maximum nesting depth ({MAX_NESTING_DEPTH}) reached", severity="warning", timeout=2)
             return
 
         # Find previous sibling (task at same level)
