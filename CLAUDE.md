@@ -43,12 +43,23 @@ TLTD (Terminal Todo List) is a terminal-based todo application with hierarchical
 
 3. **`src/app.py`** - Main Textual application
    - `TodoApp`: Main app with undo history (50 steps)
-   - `BasketPane`: Left sidebar with basket list
-   - `TaskTree`: Task display with inline editing
-   - `TaskLine`: Individual task with collapse indicators
-   - `BasketSelectorDialog`, `HelpScreen`: Modal screens
+   - Input validation constants: `MAX_TITLE_LENGTH`, `MAX_DESCRIPTION_LENGTH`, `MAX_NESTING_DEPTH`
 
-4. **`src/main.py`** - Entry point
+4. **`src/styles.py`** - CSS styles (~130 lines)
+
+5. **`src/widgets/`** - UI components package
+   - `task_line.py` - `TaskLine`: Individual task with collapse indicators
+   - `task_tree.py` - `TaskTree`: Task display with inline editing, multi-select
+   - `basket_pane.py` - `BasketPane`: Left sidebar with basket list
+
+6. **`src/dialogs/`** - Modal screens package
+   - `basket_selector.py` - `BasketSelectorDialog`: Move task to basket
+   - `description_editor.py` - `DescriptionEditorDialog`: Edit title + description
+   - `help_screen.py` - `HelpScreen` + `HELP_TEXT` constant
+
+7. **`src/quick_add.py`** - CLI quick-add command (`td "Task title"`)
+
+8. **`src/main.py`** - Entry point with crash logging
 
 ### Key Behaviors
 
@@ -61,7 +72,7 @@ TLTD (Terminal Todo List) is a terminal-based todo application with hierarchical
 
 ```json
 {
-  "Inbox": [{"id": "uuid", "title": "Task", "completed": false, "collapsed": false, "children": [], "created_at": "timestamp"}],
+  "Inbox": [{"id": "uuid", "title": "Task", "description": "", "completed": false, "collapsed": false, "children": [], "created_at": "timestamp"}],
   "Monday": [], ...
 }
 ```
@@ -112,7 +123,7 @@ The w/s keys (move up/down) call `action_unnest_task()` when task reaches top/bo
 ### Adding a New Keybinding
 1. Add to `BINDINGS` list in `TodoApp`
 2. Implement `action_<name>` method
-3. Update `action_show_help()` help text
+3. Update `HELP_TEXT` in `src/dialogs/help_screen.py`
 4. **Add Russian keyboard duplicate** (same physical key position)
 5. Update README.md keybindings section
 
@@ -139,7 +150,7 @@ source venv/bin/activate && python3 -m pytest tests/ -v
 source venv/bin/activate && python src/main.py & sleep 2 && kill $! 2>/dev/null && echo "✓ App launched"
 ```
 
-- ✅ 67 tests (models, storage, edge cases)
+- ✅ 79 tests (models, storage, multi-select, edge cases)
 - ⚠️ UI: Manual testing only (see TESTING.md)
 
 Run tests after: new features, refactoring, model/storage changes, session end.

@@ -20,7 +20,7 @@ BACKUP_COUNT = 2  # Keep 2 backup files
 
 def setup_crash_logging():
     """Set up crash logging to ~/.tltd/crash.log with rotation."""
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
 
     handler = RotatingFileHandler(
         LOG_FILE,
@@ -31,6 +31,10 @@ def setup_crash_logging():
     handler.setFormatter(logging.Formatter(
         '%(asctime)s - %(levelname)s - %(message)s'
     ))
+
+    # Set restrictive permissions on log file
+    if LOG_FILE.exists():
+        os.chmod(LOG_FILE, 0o600)
 
     logger = logging.getLogger('tltd')
     logger.setLevel(logging.ERROR)

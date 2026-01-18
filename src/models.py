@@ -3,6 +3,10 @@ import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
 
+# Input validation limits (enforced on load for defense-in-depth)
+MAX_TITLE_LENGTH = 512
+MAX_DESCRIPTION_LENGTH = 4096
+
 
 class Task:
     """Represents a single task with hierarchical children."""
@@ -75,14 +79,17 @@ class Task:
     def from_dict(cls, data: Dict[str, Any]) -> 'Task':
         """Create a Task from a dictionary."""
         children = [cls.from_dict(child) for child in data.get('children', [])]
+        # Enforce length limits on load (defense-in-depth for manually edited files)
+        title = data.get('title', '')[:MAX_TITLE_LENGTH]
+        description = data.get('description', '')[:MAX_DESCRIPTION_LENGTH]
         return cls(
-            title=data['title'],
-            task_id=data['id'],
+            title=title,
+            task_id=data.get('id'),
             completed=data.get('completed', False),
             collapsed=data.get('collapsed', False),
             children=children,
             created_at=data.get('created_at'),
-            description=data.get('description', '')
+            description=description
         )
 
     def __repr__(self) -> str:

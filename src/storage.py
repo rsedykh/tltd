@@ -78,6 +78,8 @@ class StorageManager:
             with open(self.file_path, 'r') as src:
                 with open(backup_path, 'w') as dst:
                     dst.write(src.read())
+            # Set restrictive permissions on backup file
+            os.chmod(backup_path, 0o600)
             return True
         except OSError:
             return False

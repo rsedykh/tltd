@@ -2,7 +2,32 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Quick Move Feature)
+## Latest Session (Documentation & Security Hardening)
+
+**Changes made:**
+
+1. **Updated CLAUDE.md** (was outdated after modular refactoring):
+   - Core Components section now reflects modular structure (`src/widgets/`, `src/dialogs/`, `src/styles.py`, `src/quick_add.py`)
+   - Test count updated from 67 to 79
+   - Data format example now includes `description` field
+   - Keybinding instructions reference `src/dialogs/help_screen.py` instead of `action_show_help()`
+
+2. **Security hardening** (defense-in-depth):
+   - `src/models.py`: Added `MAX_TITLE_LENGTH` and `MAX_DESCRIPTION_LENGTH` constants; `Task.from_dict()` now truncates on load to protect against manually edited JSON files
+   - `src/main.py`: Log directory created with `0o700`, log file set to `0o600` permissions
+   - `src/storage.py`: Backup files now get `0o600` permissions (consistent with data files)
+
+**Files changed:**
+- `CLAUDE.md` (documentation updates)
+- `src/models.py` (input validation on load)
+- `src/main.py` (log file permissions)
+- `src/storage.py` (backup file permissions)
+
+**Tests:** 79 passing
+
+---
+
+## Previous Session (Quick Move Feature)
 
 **Feature implemented:**
 

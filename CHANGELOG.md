@@ -40,9 +40,16 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 
 ### Security
 - Input validation limits:
-  - Task titles: max 512 characters (enforced in UI)
-  - Task descriptions: max 4096 characters (validated on save)
+  - Task titles: max 512 characters (enforced in UI and on load)
+  - Task descriptions: max 4096 characters (validated on save and on load)
   - Nesting depth: max 8 levels (prevents recursion issues)
+- Model-level input truncation in `Task.from_dict()` for defense-in-depth
+- Log files now created with restrictive permissions (`0o600`)
+- Backup files now created with restrictive permissions (`0o600`)
+
+### Documentation
+- Updated CLAUDE.md to reflect modular code structure
+- Fixed test count (67 → 79) and added description field to data format example
 
 ## 2026-01-17
 
