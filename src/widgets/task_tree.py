@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Optional, List, Tuple
+from typing import TYPE_CHECKING, Optional, List, Tuple, Set
 from textual.app import ComposeResult
 from textual.containers import Container, Vertical
 from textual.widgets import Label, Input
@@ -29,6 +29,8 @@ class TaskTree(Vertical):
         self.todo_app = todo_app
         self.flat_list: List[Tuple[Task, int]] = []  # (task, level)
         self.border_title = basket
+        # Multi-select state
+        self.marked_task_ids: Set[str] = set()
         # Inline editing state
         self.editing_index: Optional[int] = None
         self.editing_initial_value: str = ""
@@ -129,6 +131,8 @@ class TaskTree(Vertical):
                 line = TaskLine(task, level, self.show_completed, max_width)
                 if i == self.selected_index and self.editing_index is None:
                     line.add_class("selected")
+                if task.id in self.marked_task_ids:
+                    line.add_class("marked")
                 container.mount(line)
 
         # Show inline editor for create mode at the end if not yet rendered
@@ -174,6 +178,30 @@ class TaskTree(Vertical):
         """Toggle showing completed tasks."""
         self.show_completed = not self.show_completed
         self.refresh_tasks()
+
+    def toggle_mark(self, task_id: str) -> None:
+        """Toggle mark on a task (add if not marked, remove if marked)."""
+        if task_id in self.marked_task_ids:
+            self.marked_task_ids.remove(task_id)
+        else:
+            self.marked_task_ids.add(task_id)
+        self._render_tasks()
+
+    def clear_marks(self) -> None:
+        """Clear all marks."""
+        self.marked_task_ids.clear()
+        self._render_tasks()
+
+    def get_marked_tasks(self) -> List[Task]:
+        """Return Task objects for all marked IDs."""
+        if not self.todo_app:
+            return []
+        tasks = []
+        for task_id in self.marked_task_ids:
+            task = self.todo_app.todo_data.find_task(task_id)
+            if task:
+                tasks.append(task)
+        return tasks
 
     def start_edit_task(self, task_id: str, initial_value: str) -> None:
         """Start inline editing of an existing task."""

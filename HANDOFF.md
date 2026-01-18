@@ -2,7 +2,41 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Modular Refactoring & Security Hardening)
+## Latest Session (Multi-Select Operations)
+
+**Major feature implemented:**
+
+1. **Multi-select for bulk operations**:
+   - `b` key marks/unmarks tasks (Russian: `и`)
+   - `Esc` clears all marks
+   - Marked tasks show blue background highlight (`.marked` CSS class)
+   - When tasks are marked, bulk operations apply to all:
+     - `x` - complete/uncomplete all marked
+     - `r` - move all marked to selected basket
+     - `Backspace` - delete all marked
+   - Marks automatically clear when switching baskets
+   - Single undo restores all tasks from bulk operation
+
+2. **Keybinding changes**:
+   - `Esc` no longer quits app (now clears marks only)
+   - Use `Ctrl+C` to quit
+   - Removed `m`/`M` keybinds (replaced by `b`)
+
+3. **Tests**:
+   - Added `tests/test_multiselect.py` with 12 tests
+   - Total: 79 tests passing
+
+**Files changed:**
+- `src/app.py` (new keybindings, bulk operation logic)
+- `src/widgets/task_tree.py` (marked_task_ids state, mark methods)
+- `src/styles.py` (`.marked` CSS classes)
+- `src/dialogs/help_screen.py` (multi-select section)
+- `README.md` (multi-select keybindings)
+- `tests/test_multiselect.py` (new)
+
+---
+
+## Previous Session (Modular Refactoring & Security Hardening)
 
 **Major refactoring:**
 

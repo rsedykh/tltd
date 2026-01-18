@@ -5,6 +5,13 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 ## 2026-01-18
 
 ### Added
+- **Multi-select operations**: Mark tasks for bulk actions
+  - `b` key marks/unmarks current task (Russian: `и`)
+  - `Esc` clears all marks
+  - Blue background highlight for marked tasks
+  - Bulk operations apply to all marked: `x` (complete), `r` (move), `Backspace` (delete)
+  - Marks auto-clear when switching baskets
+- 12 new multi-select tests (79 total)
 - **Quick-add CLI command (`td`)**: Add tasks to Inbox from terminal
   - `td "Task title"` - add task with title
   - `td "Task title \\ description"` - add task with description
@@ -15,6 +22,7 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 - New `raycast/` directory with script commands
 
 ### Changed
+- `Esc` key now clears marks instead of quitting (use `Ctrl+C` to quit)
 - **Modular code structure**: Split app.py (~1460 lines) into:
   - `src/widgets/` package (TaskLine, TaskTree, BasketPane)
   - `src/dialogs/` package (BasketSelectorDialog, DescriptionEditorDialog, HelpScreen)

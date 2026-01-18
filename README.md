@@ -133,14 +133,19 @@ kitty --single-instance ~/.local/bin/tltd
 ### Undo
 - `\`: Undo last action (up to 50 actions)
 
+### Multi-Select
+- `b`: Mark/unmark current task
+- `Esc`: Clear all marks
+- When tasks are marked, `x`/`r`/`Backspace` apply to all marked tasks
+
 ### Quick Basket Jump
 - `` ` ``: Jump to Inbox
 - `1-7`: Jump to Monday through Sunday
 - `0`: Jump to Later
 
 ### Application
-- `Esc`: Quit application
 - `?`: Show help screen
+- `Ctrl+c`: Quit application
 
 ## License
 

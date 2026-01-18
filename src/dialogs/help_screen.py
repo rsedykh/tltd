@@ -45,14 +45,19 @@ HELP_TEXT = """
 [bold underline]Undo:[/bold underline]
   \\          Undo last action (up to 50 actions)
 
+[bold underline]Multi-Select:[/bold underline]
+  b           Mark/unmark task
+  Esc         Clear all marks
+  [dim]When marked: x/r/Backspace apply to all[/dim]
+
 [bold underline]Quick Basket Jump:[/bold underline]
   `           Inbox
   1-7         Monday through Sunday
   0           Later
 
 [bold underline]Application:[/bold underline]
-  Esc         Quit application
   ?           Show this help
+  Ctrl+c      Quit application
 
 [dim]Data stored in: ~/.tltd/tasks.json[/dim]
 """

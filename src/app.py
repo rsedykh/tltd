@@ -41,9 +41,10 @@ class TodoApp(App):
         Binding("e", "nest_task", "Nest →", show=True),
         Binding("q", "unnest_task", "← Unnest", show=True),
         Binding("z", "toggle_show_completed", "Show Done", show=True),
+        Binding("b", "toggle_mark", "Mark", show=True),
         Binding("backslash", "undo", "Undo", show=True),
         Binding("?", "show_help", "Help", show=True),
-        Binding("escape", "quit", "Quit", show=True),
+        Binding("escape", "escape_action", "Clear Marks", show=False),
         # Quick basket jump keys (` for Inbox, 1-7 for Mon-Sun, 0 for Later)
         Binding("grave_accent", "jump_inbox", "Inbox", show=False),
         Binding("1", "jump_monday", "Mon", show=False),
@@ -69,6 +70,7 @@ class TodoApp(App):
         Binding("у", "nest_task", "Nest", show=False),  # e
         Binding("й", "unnest_task", "Unnest", show=False),  # q
         Binding("я", "toggle_show_completed", "Show Done", show=False),  # z
+        Binding("и", "toggle_mark", "Mark", show=False),  # b
         Binding("ё", "jump_inbox", "Inbox", show=False),  # ` (backtick)
     ]
 
@@ -289,8 +291,27 @@ class TodoApp(App):
         )
 
     def action_toggle_complete(self) -> None:
-        """Toggle completion of selected task."""
-        if self.task_tree:
+        """Toggle completion of selected task(s)."""
+        if not self.task_tree:
+            return
+
+        marked_tasks = self.task_tree.get_marked_tasks()
+        if marked_tasks:
+            # Bulk complete
+            self.save_to_history()
+            for task in marked_tasks:
+                if not task.completed:
+                    self.recently_completed[task.id] = time.time()
+                    task_id = task.id
+                    self.set_timer(5.0, lambda tid=task_id: self._cleanup_completed_task(tid))
+                else:
+                    self.recently_completed.pop(task.id, None)
+                task.completed = not task.completed
+            self.task_tree.clear_marks()
+            self.save_data()
+            self.task_tree.refresh_tasks()
+        else:
+            # Single task completion
             task = self.task_tree.get_selected_task()
             if not task:
                 return
@@ -314,39 +335,65 @@ class TodoApp(App):
             self.save_data()
 
     def action_delete_task(self) -> None:
-        """Delete the selected task."""
+        """Delete the selected task(s)."""
         if not self.task_tree:
             return
 
-        task = self.task_tree.get_selected_task()
-        if task:
+        marked_tasks = self.task_tree.get_marked_tasks()
+        if marked_tasks:
+            # Bulk delete
             self.save_to_history()
-            self.todo_data.delete_task(task.id)
+            task_ids = [t.id for t in marked_tasks]
+            for task_id in task_ids:
+                self.todo_data.delete_task(task_id)
+            self.task_tree.clear_marks()
             self.save_data()
             self.task_tree.refresh_tasks()
-            # If basket is now empty, switch focus to baskets panel
+            # Handle empty basket
             if not self.task_tree.flat_list:
                 self.focused_panel = "baskets"
                 self._update_panel_focus()
-            # Adjust selection if now out of bounds (deleted last task)
+            # Adjust selection if now out of bounds
             max_idx = len(self.task_tree.flat_list) - 1
             if self.task_tree.selected_index > max_idx:
                 self.task_tree.selected_index = max(0, max_idx)
                 self.task_tree._render_tasks()
+        else:
+            # Single task deletion
+            task = self.task_tree.get_selected_task()
+            if task:
+                self.save_to_history()
+                self.todo_data.delete_task(task.id)
+                self.save_data()
+                self.task_tree.refresh_tasks()
+                # If basket is now empty, switch focus to baskets panel
+                if not self.task_tree.flat_list:
+                    self.focused_panel = "baskets"
+                    self._update_panel_focus()
+                # Adjust selection if now out of bounds (deleted last task)
+                max_idx = len(self.task_tree.flat_list) - 1
+                if self.task_tree.selected_index > max_idx:
+                    self.task_tree.selected_index = max(0, max_idx)
+                    self.task_tree._render_tasks()
 
     def action_move_task(self) -> None:
-        """Move task to a different basket."""
+        """Move task(s) to a different basket."""
         if not self.task_tree:
             return
 
-        task = self.task_tree.get_selected_task()
-        if not task:
+        marked_tasks = self.task_tree.get_marked_tasks()
+        tasks_to_move = marked_tasks if marked_tasks else [self.task_tree.get_selected_task()]
+
+        if not tasks_to_move or not tasks_to_move[0]:
             return
 
         def handle_result(basket: str) -> None:
             if basket:
                 self.save_to_history()
-                self.todo_data.move_task(task.id, basket)
+                for task in tasks_to_move:
+                    self.todo_data.move_task(task.id, basket)
+                if marked_tasks and self.task_tree:
+                    self.task_tree.clear_marks()
                 self.save_data()
                 if self.task_tree:
                     # Refresh to rebuild flat_list, then adjust selection if out of bounds
@@ -479,6 +526,19 @@ class TodoApp(App):
         if self.basket_pane:
             self.basket_pane.show_completed_mode = not self.basket_pane.show_completed_mode
             self.basket_pane.refresh_baskets()
+
+    def action_toggle_mark(self) -> None:
+        """Toggle mark on current task."""
+        if self.focused_panel != "tasks" or not self.task_tree:
+            return
+        task = self.task_tree.get_selected_task()
+        if task:
+            self.task_tree.toggle_mark(task.id)
+
+    def action_escape_action(self) -> None:
+        """Clear marks if any."""
+        if self.task_tree and self.task_tree.marked_task_ids:
+            self.task_tree.clear_marks()
 
     def action_nest_task(self) -> None:
         """Nest task under previous sibling (Tab key)."""
@@ -723,6 +783,8 @@ class TodoApp(App):
     def _switch_basket(self) -> None:
         """Switch to the selected basket."""
         if self.basket_pane and self.task_tree:
+            # Clear marks when switching baskets
+            self.task_tree.marked_task_ids.clear()
             self.task_tree.basket = self.basket_pane.selected_basket
             self.task_tree.border_title = self.basket_pane.selected_basket
             self.task_tree.selected_index = 0

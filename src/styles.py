@@ -43,6 +43,14 @@ Screen {
     color: $text;
 }
 
+.marked {
+    background: #2a4a6a;
+}
+
+.selected.marked {
+    background: #3a5a7a;
+}
+
 .basket-item {
     padding: 0 1;
 }
