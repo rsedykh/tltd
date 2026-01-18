@@ -2,6 +2,18 @@
 
 All notable changes to TLTD (Terminal Todo List) are documented in this file.
 
+## 2026-01-18
+
+### Added
+- **Quick-add CLI command (`td`)**: Add tasks to Inbox from terminal
+  - `td "Task title"` - add task with title
+  - `td "Task title \\ description"` - add task with description
+- **Raycast integration**: Script commands for macOS Raycast launcher
+  - `td` - quick-add task to Inbox
+  - `tltd` - open app in Terminal
+  - Examples for iTerm2, Warp, and Kitty terminals
+- New `raycast/` directory with script commands
+
 ## 2026-01-17
 
 ### Added

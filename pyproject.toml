@@ -36,6 +36,7 @@ dev = [
 
 [project.scripts]
 tltd = "src.main:main"
+td = "src.quick_add:main"
 
 [project.urls]
 Homepage = "https://github.com/rsedykh/tltd"

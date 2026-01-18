@@ -51,6 +51,55 @@ pytest tests/ -v
 tltd
 ```
 
+### Quick Add from Command Line
+
+Add tasks directly from your terminal without opening the app:
+
+```bash
+td "Buy groceries"                    # Add task to Inbox
+td "Buy groceries \\ milk, eggs"      # Add task with description
+```
+
+## Raycast Integration (macOS)
+
+TLTD includes Raycast script commands for quick access.
+
+### Setup
+
+1. Copy scripts to Raycast:
+   ```bash
+   cp raycast/*.sh ~/.config/raycast/script-commands/
+   ```
+
+2. Open Raycast Settings (Cmd+,) → Extensions → Script Commands → Add the directory if needed
+
+### Commands
+
+- **td**: Quick-add task to Inbox. Type `td` then enter `task title \\ optional description`
+- **tltd**: Opens Terminal and launches the app
+
+### Using a Different Terminal
+
+The `tltd.sh` script uses macOS Terminal by default. To use a different terminal, edit the script:
+
+**iTerm2:**
+```bash
+osascript -e 'tell application "iTerm"
+    create window with default profile command "~/.local/bin/tltd"
+    activate
+end tell'
+```
+
+**Warp:**
+```bash
+open -a Warp && sleep 0.5 && osascript -e 'tell application "System Events" to keystroke "~/.local/bin/tltd\n"'
+```
+
+**Kitty:**
+```bash
+kitty --single-instance ~/.local/bin/tltd
+```
+
 ## Keyboard Shortcuts
 
 ### Panel Switching

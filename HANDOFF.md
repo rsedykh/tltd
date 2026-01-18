@@ -2,7 +2,36 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Task Descriptions Feature)
+## Latest Session (Raycast Quick-Add Integration)
+
+**Features implemented:**
+
+1. **Quick-add CLI command (`td`)**:
+   - New `src/quick_add.py` module for command-line task creation
+   - Usage: `td "Task title"` or `td "Task title \\ description"`
+   - Adds tasks directly to Inbox without opening the app
+   - Entry point added to pyproject.toml
+
+2. **Raycast integration**:
+   - Created `raycast/td.sh` - quick-add task script
+   - Created `raycast/tltd.sh` - open app in Terminal script
+   - README section with setup instructions
+   - Examples for iTerm2, Warp, and Kitty terminals
+
+3. **Documentation**:
+   - README updated with Raycast integration section
+   - README updated with `td` command-line usage
+
+**Files changed:**
+- `src/quick_add.py` (new)
+- `raycast/td.sh` (new)
+- `raycast/tltd.sh` (new)
+- `pyproject.toml` (added td entry point)
+- `README.md` (Raycast section, td usage)
+
+---
+
+## Previous Session (Task Descriptions Feature)
 
 **Major feature implemented:**
 
