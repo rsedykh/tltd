@@ -251,7 +251,9 @@ class TodoApp(App):
 
         self.task_tree.start_edit_task(task.id, task.title)
 
+    MAX_TITLE_LENGTH = 512
     MAX_DESCRIPTION_LENGTH = 4096
+    MAX_NESTING_DEPTH = 8
 
     def action_edit_description(self) -> None:
         """Edit the title and description of the selected task."""
@@ -488,6 +490,11 @@ class TodoApp(App):
             return
 
         current_task, current_level = self.task_tree.flat_list[idx]
+
+        # Check nesting depth limit
+        if current_level >= self.MAX_NESTING_DEPTH - 1:
+            self.notify(f"Maximum nesting depth ({self.MAX_NESTING_DEPTH}) reached", severity="warning", timeout=2)
+            return
 
         # Find previous sibling (task at same level)
         for i in range(idx - 1, -1, -1):

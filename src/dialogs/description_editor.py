@@ -14,11 +14,14 @@ class DescriptionEditorDialog(ModalScreen[Optional[Tuple[str, str]]]):
         self.task_title = task_title
         self.current_description = current_description
 
+    MAX_TITLE_LENGTH = 512
+    MAX_DESCRIPTION_LENGTH = 4096
+
     def compose(self) -> ComposeResult:
         with Container(id="description-dialog-container"):
-            yield Input(value=self.task_title, id="title-editor")
+            yield Input(value=self.task_title, id="title-editor", max_length=self.MAX_TITLE_LENGTH)
             yield TextArea(self.current_description, id="description-editor")
-            yield Label("[dim]TAB to switch, Ctrl+S to save, ESC to cancel[/dim]", id="description-hint")
+            yield Label(f"[dim]TAB to switch, Ctrl+S to save, ESC to cancel (max {self.MAX_DESCRIPTION_LENGTH} chars)[/dim]", id="description-hint")
 
     def on_mount(self) -> None:
         """Focus the description text area when dialog opens."""
@@ -78,6 +81,10 @@ class DescriptionEditorDialog(ModalScreen[Optional[Tuple[str, str]]]):
             new_title = title_input.value.strip()
             if not new_title:
                 self.notify("Title cannot be empty", severity="warning", timeout=2)
+                event.stop()
+                return
+            if len(text_area.text) > self.MAX_DESCRIPTION_LENGTH:
+                self.notify(f"Description too long (max {self.MAX_DESCRIPTION_LENGTH} chars)", severity="warning", timeout=2)
                 event.stop()
                 return
             self.dismiss((new_title, text_area.text))

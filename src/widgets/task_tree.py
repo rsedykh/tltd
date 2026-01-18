@@ -89,7 +89,7 @@ class TaskTree(Vertical):
                 # Add visual indicator for nesting level
                 prefix = "☐ "
                 full_content = f"{indent_text}{prefix}"
-                input_widget = Input(value="", id="inline-editor", placeholder="New task...")
+                input_widget = Input(value="", id="inline-editor", placeholder="New task...", max_length=512)
                 # Use CSS to add padding based on indentation
                 padding_left = len(full_content)
                 input_widget.styles.padding = (0, 0, 0, padding_left)
@@ -105,7 +105,7 @@ class TaskTree(Vertical):
                 check = "☑" if task.completed else "☐"
                 prefix = f"{collapse_icon} {check} "
                 full_content = f"{indent_text}{prefix}"
-                input_widget = Input(value=self.editing_initial_value, id="inline-editor")
+                input_widget = Input(value=self.editing_initial_value, id="inline-editor", max_length=512)
                 padding_left = len(full_content)
                 input_widget.styles.padding = (0, 0, 0, padding_left)
                 container.mount(input_widget)
@@ -136,7 +136,7 @@ class TaskTree(Vertical):
             indent_text = "  " * self.editing_level
             prefix = "☐ "
             full_content = f"{indent_text}{prefix}"
-            input_widget = Input(value="", id="inline-editor", placeholder="New task...")
+            input_widget = Input(value="", id="inline-editor", placeholder="New task...", max_length=512)
             padding_left = len(full_content)
             input_widget.styles.padding = (0, 0, 0, padding_left)
             container.mount(input_widget)
