@@ -2,7 +2,49 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Dynamic Weeks Feature)
+## Latest Session (Code Sanitization & Bug Fixes)
+
+**Changes made:**
+
+1. **Code sanitization review** (using custom code-sanitizer agent):
+   - Reviewed entire codebase for dead code, unused imports, naming consistency
+   - Found zero dead code or unused imports - codebase is very clean
+   - Identified 2 issues that needed fixing
+
+2. **Fixed incorrect help text** (critical bug):
+   - Help screen had wrong keybinding documentation: showed 'b' for marking tasks, actually 'r'
+   - Removed incorrect "r moves tasks" line (it's number keys that move marked tasks)
+   - Updated multi-select section to accurately describe behavior
+
+3. **Consolidated duplicate constants** (DRY principle):
+   - `MAX_TITLE_LENGTH`, `MAX_DESCRIPTION_LENGTH`, `MAX_NESTING_DEPTH` were defined in 3 places
+   - Moved all to `models.py` as single source of truth
+   - Updated `app.py` and `description_editor.py` to import from models
+
+4. **Added custom agents to project**:
+   - Moved 5 custom agents from user config to `.claude/agents/`:
+     - code-sanitizer.md (for code quality reviews)
+     - security-researcher.md (for security audits)
+     - code-merge-architect.md (for complex merges)
+     - quick-task-executor.md (for quick tasks)
+     - middle-dev.md (for mid-level development)
+   - Updated `.gitignore` to exclude local Claude Code settings
+
+**Files changed:**
+- `src/dialogs/help_screen.py` (fixed keybinding documentation)
+- `src/models.py` (added MAX_NESTING_DEPTH constant)
+- `src/app.py` (removed duplicate constants, import from models)
+- `src/dialogs/description_editor.py` (removed duplicate constants, import from models)
+- `.claude/agents/` (added 5 agent files)
+- `.gitignore` (added Claude Code local settings)
+
+**Tests:** 95 passing
+
+**Code quality:** Excellent - no dead code, no unused imports, consistent naming, proper architecture
+
+---
+
+## Previous Session (Dynamic Weeks Feature)
 
 **Major feature implemented:**
 

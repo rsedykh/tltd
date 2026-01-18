@@ -36,6 +36,12 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
   - `tltd` - open app in Terminal
   - Examples for iTerm2, Warp, and Kitty terminals
 - New `raycast/` directory with script commands
+- **Custom agents for Claude Code**: Project-level agents in `.claude/agents/`
+  - code-sanitizer.md - code quality and cleanup reviews
+  - security-researcher.md - security audits
+  - code-merge-architect.md - complex merge assistance
+  - quick-task-executor.md - quick task execution
+  - middle-dev.md - mid-level development tasks
 
 ### Changed
 - **Data format**: Baskets now use date keys (YYYY-MM-DD) instead of day names
@@ -47,9 +53,19 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
   - `src/dialogs/` package (DescriptionEditorDialog, HelpScreen)
   - `src/styles.py` (CSS styles)
   - `src/app.py` now ~770 lines (orchestration only)
+- **Consolidated constants**: Single source of truth for validation limits
+  - Moved `MAX_NESTING_DEPTH` to `models.py`
+  - All files now import from `models.py` (DRY principle)
+
+### Fixed
+- **Help text keybinding errors**: Corrected multi-select documentation
+  - Fixed incorrect 'b' → 'r' for marking tasks
+  - Removed misleading "r moves tasks" entry
+  - Updated description to mention number keys for moving marked tasks
 
 ### Removed
 - `src/dialogs/basket_selector.py` - no longer needed with quick-move feature
+- Duplicate constant definitions in `app.py` and `description_editor.py`
 
 ### Security
 - Input validation limits:
