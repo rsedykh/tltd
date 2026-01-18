@@ -785,56 +785,50 @@ class TodoApp(App):
         return basket_key
 
     def _jump_to_basket(self, basket_name: str) -> None:
-        """Jump to basket, or move selected/marked tasks if tasks panel is focused."""
+        """Jump to basket, or move marked tasks if any are marked."""
         if not self.basket_pane or not self.task_tree:
             return
 
         display_name = self._get_basket_display_name(basket_name)
 
-        # If tasks panel focused, move task(s) to basket
-        if self.focused_panel == "tasks":
-            marked_tasks = self.task_tree.get_marked_tasks()
-            tasks_to_move = marked_tasks if marked_tasks else [self.task_tree.get_selected_task()]
-
-            if tasks_to_move and tasks_to_move[0]:
-                current_basket = self.basket_pane.selected_basket
-                if current_basket == basket_name:
-                    self.notify(f"Already in {display_name}", timeout=1)
-                    return
-
-                self.save_to_history()
-                for task in tasks_to_move:
-                    self.todo_data.move_task(task.id, basket_name)
-
-                if marked_tasks:
-                    self.task_tree.clear_marks()
-
-                self.save_data()
-                self.task_tree.refresh_tasks()
-
-                # Handle empty basket after move
-                if not self.task_tree.flat_list:
-                    self.focused_panel = "baskets"
-                    self._update_panel_focus()
-
-                # Adjust selection if out of bounds
-                max_idx = len(self.task_tree.flat_list) - 1
-                if self.task_tree.selected_index > max_idx:
-                    self.task_tree.selected_index = max(0, max_idx)
-                    self.task_tree._render_tasks()
-
-                count = len(tasks_to_move)
-                if count == 1:
-                    self.notify(f"Moved to {display_name}", timeout=1)
-                else:
-                    self.notify(f"Moved {count} tasks to {display_name}", timeout=1)
+        # Move tasks only if some are marked (with 'r')
+        marked_tasks = self.task_tree.get_marked_tasks()
+        if marked_tasks:
+            current_basket = self.basket_pane.selected_basket
+            if current_basket == basket_name:
+                self.notify(f"Already in {display_name}", timeout=1)
                 return
 
-        # Otherwise, jump to basket (original behavior)
+            self.save_to_history()
+            for task in marked_tasks:
+                self.todo_data.move_task(task.id, basket_name)
+
+            self.task_tree.clear_marks()
+            self.save_data()
+            self.task_tree.refresh_tasks()
+
+            # Handle empty basket after move
+            if not self.task_tree.flat_list:
+                self.focused_panel = "baskets"
+                self._update_panel_focus()
+
+            # Adjust selection if out of bounds
+            max_idx = len(self.task_tree.flat_list) - 1
+            if self.task_tree.selected_index > max_idx:
+                self.task_tree.selected_index = max(0, max_idx)
+                self.task_tree._render_tasks()
+
+            count = len(marked_tasks)
+            if count == 1:
+                self.notify(f"Moved to {display_name}", timeout=1)
+            else:
+                self.notify(f"Moved {count} tasks to {display_name}", timeout=1)
+            return
+
+        # No marked tasks: jump to basket
         self.basket_pane.selected_basket = basket_name
         self.basket_pane.refresh_baskets()
         self._switch_basket()
-        # Switch focus to tasks panel
         self.focused_panel = "tasks"
         self._update_panel_focus()
 
