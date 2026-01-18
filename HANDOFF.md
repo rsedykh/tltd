@@ -2,7 +2,44 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Raycast Quick-Add Integration)
+## Latest Session (Modular Refactoring & Security Hardening)
+
+**Major refactoring:**
+
+1. **Split app.py into modular structure**:
+   - `src/styles.py` - CSS styles extracted (~130 lines)
+   - `src/widgets/` - UI components package
+     - `task_line.py` - TaskLine widget
+     - `task_tree.py` - TaskTree widget with Messages
+     - `basket_pane.py` - BasketPane widget
+   - `src/dialogs/` - Modal screens package
+     - `basket_selector.py` - BasketSelectorDialog
+     - `description_editor.py` - DescriptionEditorDialog
+     - `help_screen.py` - HelpScreen + HELP_TEXT constant
+   - `src/app.py` reduced from ~1460 to ~770 lines
+
+2. **Security hardening (based on security audit)**:
+   - `MAX_TITLE_LENGTH = 512` - enforced in UI via Input max_length
+   - `MAX_DESCRIPTION_LENGTH = 4096` - validated on save with user feedback
+   - `MAX_NESTING_DEPTH = 8` - prevents stack overflow from deep recursion
+
+**Files changed:**
+- `src/app.py` (refactored, added constants)
+- `src/styles.py` (new)
+- `src/widgets/__init__.py` (new)
+- `src/widgets/task_line.py` (new)
+- `src/widgets/task_tree.py` (new)
+- `src/widgets/basket_pane.py` (new)
+- `src/dialogs/__init__.py` (new)
+- `src/dialogs/basket_selector.py` (new)
+- `src/dialogs/description_editor.py` (new)
+- `src/dialogs/help_screen.py` (new)
+
+**Code quality:** Ran code-sanitizer and security-researcher agents - codebase is clean.
+
+---
+
+## Previous Session (Raycast Quick-Add Integration)
 
 **Features implemented:**
 

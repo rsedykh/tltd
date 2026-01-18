@@ -14,6 +14,19 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
   - Examples for iTerm2, Warp, and Kitty terminals
 - New `raycast/` directory with script commands
 
+### Changed
+- **Modular code structure**: Split app.py (~1460 lines) into:
+  - `src/widgets/` package (TaskLine, TaskTree, BasketPane)
+  - `src/dialogs/` package (BasketSelectorDialog, DescriptionEditorDialog, HelpScreen)
+  - `src/styles.py` (CSS styles)
+  - `src/app.py` now ~770 lines (orchestration only)
+
+### Security
+- Input validation limits:
+  - Task titles: max 512 characters (enforced in UI)
+  - Task descriptions: max 4096 characters (validated on save)
+  - Nesting depth: max 8 levels (prevents recursion issues)
+
 ## 2026-01-17
 
 ### Added
