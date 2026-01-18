@@ -2,7 +2,26 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Crash Logging)
+## Latest Session (Quick Move Feature)
+
+**Feature implemented:**
+
+1. **Quick move tasks with number keys**:
+   - When tasks panel is focused: `` ` ``, `1-7`, `0` now move selected task(s) to that basket
+   - When baskets panel is focused: same keys jump to basket (original behavior)
+   - Supports multi-select (marked tasks move together)
+   - Shows notification: "Moved to Monday", "Already in Inbox", etc.
+   - Handles empty basket after move (auto-focuses baskets panel)
+
+**Files changed:**
+- `src/app.py` (modified `_jump_to_basket()` method)
+- `src/dialogs/help_screen.py` (updated help text)
+
+**Tests:** 79 passing
+
+---
+
+## Previous Session (Crash Logging)
 
 **Feature implemented:**
 

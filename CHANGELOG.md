@@ -5,6 +5,11 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 ## 2026-01-18
 
 ### Added
+- **Quick move with number keys**: Move tasks directly to baskets without dialog
+  - When tasks panel focused: `` ` ``, `1-7`, `0` move selected task(s) to basket
+  - When baskets panel focused: same keys jump to basket (original behavior)
+  - Works with multi-select (marked tasks move together)
+  - Shows notification feedback ("Moved to Monday", etc.)
 - **Crash logging**: Application errors now logged to `~/.tltd/crash.log`
   - Full tracebacks with timestamps
   - Log rotation at 1MB with 2 backup files

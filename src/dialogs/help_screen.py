@@ -50,10 +50,12 @@ HELP_TEXT = """
   Esc         Clear all marks
   [dim]When marked: x/r/Backspace apply to all[/dim]
 
-[bold underline]Quick Basket Jump:[/bold underline]
+[bold underline]Quick Move / Basket Jump:[/bold underline]
   `           Inbox
   1-7         Monday through Sunday
   0           Later
+  [dim]Tasks panel: moves task(s) to basket[/dim]
+  [dim]Baskets panel: jumps to basket[/dim]
 
 [bold underline]Application:[/bold underline]
   ?           Show this help
