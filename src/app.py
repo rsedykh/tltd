@@ -8,11 +8,11 @@ from textual.containers import Horizontal
 from textual.widgets import Footer
 from textual.binding import Binding
 
-from .models import TodoData, Task
+from .models import TodoData, Task, get_current_week_dates, date_to_display_name, is_date_basket
 from .storage import StorageManager
 from .styles import CSS
 from .widgets import TaskTree, BasketPane
-from .dialogs import BasketSelectorDialog, DescriptionEditorDialog, HelpScreen
+from .dialogs import DescriptionEditorDialog, HelpScreen
 
 
 class TodoApp(App):
@@ -27,7 +27,6 @@ class TodoApp(App):
         Binding("v", "edit_description", "Description", show=True),
         Binding("x", "toggle_complete", "✓ Done", show=True),
         Binding("backspace", "delete_task", "Delete", show=True),
-        Binding("r", "move_task", "Move to Basket", show=True),
         Binding("up", "navigate_up", "↑", show=False),
         Binding("down", "navigate_down", "↓", show=False),
         Binding("left", "switch_to_baskets", "◀ Baskets", show=True),
@@ -41,7 +40,7 @@ class TodoApp(App):
         Binding("e", "nest_task", "Nest →", show=True),
         Binding("q", "unnest_task", "← Unnest", show=True),
         Binding("z", "toggle_show_completed", "Show Done", show=True),
-        Binding("b", "toggle_mark", "Mark", show=True),
+        Binding("r", "toggle_mark", "Mark", show=True),
         Binding("backslash", "undo", "Undo", show=True),
         Binding("?", "show_help", "Help", show=True),
         Binding("escape", "escape_action", "Clear Marks", show=False),
@@ -60,7 +59,6 @@ class TodoApp(App):
         Binding("с", "add_task", "Create", show=False),  # c
         Binding("С", "add_task_to_inbox", "Create in Inbox", show=False),  # C (Shift+c)
         Binding("ч", "toggle_complete", "Done", show=False),  # x
-        Binding("к", "move_task", "Move", show=False),  # r
         Binding("ф", "collapse_task", "Collapse", show=False),  # a
         Binding("в", "expand_task", "Expand", show=False),  # d
         Binding("Ф", "collapse_all", "Collapse All", show=False),  # A (Shift+a)
@@ -70,7 +68,7 @@ class TodoApp(App):
         Binding("у", "nest_task", "Nest", show=False),  # e
         Binding("й", "unnest_task", "Unnest", show=False),  # q
         Binding("я", "toggle_show_completed", "Show Done", show=False),  # z
-        Binding("и", "toggle_mark", "Mark", show=False),  # b
+        Binding("к", "toggle_mark", "Mark", show=False),  # r
         Binding("ё", "jump_inbox", "Inbox", show=False),  # ` (backtick)
     ]
 
@@ -100,9 +98,29 @@ class TodoApp(App):
 
     def on_mount(self) -> None:
         """Initialize the app when mounted."""
+        # Check for week transition on startup
+        tasks_moved = self.todo_data.check_and_perform_week_transition()
+        if tasks_moved > 0:
+            self.save_data()
+            self.notify(f"Week transition: {tasks_moved} task(s) moved to Inbox", timeout=5)
+
         if self.task_tree:
             self.task_tree.refresh_tasks()
         self._update_panel_focus()
+
+        # Set up hourly timer to check for week transition
+        self.set_interval(3600, self._check_week_transition)
+
+    def _check_week_transition(self) -> None:
+        """Periodically check if week transition is needed (for long-running sessions)."""
+        tasks_moved = self.todo_data.check_and_perform_week_transition()
+        if tasks_moved > 0:
+            self.save_data()
+            if self.task_tree:
+                self.task_tree.refresh_tasks()
+            if self.basket_pane:
+                self.basket_pane.refresh_baskets()
+            self.notify(f"Week transition: {tasks_moved} task(s) moved to Inbox", timeout=5)
 
     def save_to_history(self) -> None:
         """Save current state to undo history."""
@@ -375,39 +393,6 @@ class TodoApp(App):
                 if self.task_tree.selected_index > max_idx:
                     self.task_tree.selected_index = max(0, max_idx)
                     self.task_tree._render_tasks()
-
-    def action_move_task(self) -> None:
-        """Move task(s) to a different basket."""
-        if not self.task_tree:
-            return
-
-        marked_tasks = self.task_tree.get_marked_tasks()
-        tasks_to_move = marked_tasks if marked_tasks else [self.task_tree.get_selected_task()]
-
-        if not tasks_to_move or not tasks_to_move[0]:
-            return
-
-        def handle_result(basket: str) -> None:
-            if basket:
-                self.save_to_history()
-                for task in tasks_to_move:
-                    self.todo_data.move_task(task.id, basket)
-                if marked_tasks and self.task_tree:
-                    self.task_tree.clear_marks()
-                self.save_data()
-                if self.task_tree:
-                    # Refresh to rebuild flat_list, then adjust selection if out of bounds
-                    self.task_tree.refresh_tasks()
-                    # If basket is now empty, switch focus to baskets panel
-                    if not self.task_tree.flat_list:
-                        self.focused_panel = "baskets"
-                        self._update_panel_focus()
-                    max_idx = len(self.task_tree.flat_list) - 1
-                    if self.task_tree.selected_index > max_idx:
-                        self.task_tree.selected_index = max(0, max_idx)
-                        self.task_tree._render_tasks()
-
-        self.push_screen(BasketSelectorDialog(), handle_result)
 
     def action_navigate_up(self) -> None:
         """Navigate up in current panel."""
@@ -790,10 +775,21 @@ class TodoApp(App):
             self.task_tree.selected_index = 0
             self.task_tree.refresh_tasks()
 
+    def _get_basket_display_name(self, basket_key: str) -> str:
+        """Get display name for a basket (converts date to day name)."""
+        if basket_key in ('Inbox', 'Later'):
+            return basket_key
+        # It's a date key, convert to day name
+        if is_date_basket(basket_key):
+            return date_to_display_name(basket_key)
+        return basket_key
+
     def _jump_to_basket(self, basket_name: str) -> None:
         """Jump to basket, or move selected/marked tasks if tasks panel is focused."""
         if not self.basket_pane or not self.task_tree:
             return
+
+        display_name = self._get_basket_display_name(basket_name)
 
         # If tasks panel focused, move task(s) to basket
         if self.focused_panel == "tasks":
@@ -803,7 +799,7 @@ class TodoApp(App):
             if tasks_to_move and tasks_to_move[0]:
                 current_basket = self.basket_pane.selected_basket
                 if current_basket == basket_name:
-                    self.notify(f"Already in {basket_name}", timeout=1)
+                    self.notify(f"Already in {display_name}", timeout=1)
                     return
 
                 self.save_to_history()
@@ -829,9 +825,9 @@ class TodoApp(App):
 
                 count = len(tasks_to_move)
                 if count == 1:
-                    self.notify(f"Moved to {basket_name}", timeout=1)
+                    self.notify(f"Moved to {display_name}", timeout=1)
                 else:
-                    self.notify(f"Moved {count} tasks to {basket_name}", timeout=1)
+                    self.notify(f"Moved {count} tasks to {display_name}", timeout=1)
                 return
 
         # Otherwise, jump to basket (original behavior)
@@ -842,37 +838,44 @@ class TodoApp(App):
         self.focused_panel = "tasks"
         self._update_panel_focus()
 
+    def _get_day_basket(self, day_index: int) -> str:
+        """Get the date key for a day in the current week (0=Monday, 6=Sunday)."""
+        current_week = get_current_week_dates()
+        if day_index < len(current_week):
+            return current_week[day_index]
+        return 'Inbox'  # Fallback
+
     def action_jump_inbox(self) -> None:
         """Jump to Inbox basket."""
         self._jump_to_basket("Inbox")
 
     def action_jump_monday(self) -> None:
         """Jump to Monday basket."""
-        self._jump_to_basket("Monday")
+        self._jump_to_basket(self._get_day_basket(0))
 
     def action_jump_tuesday(self) -> None:
         """Jump to Tuesday basket."""
-        self._jump_to_basket("Tuesday")
+        self._jump_to_basket(self._get_day_basket(1))
 
     def action_jump_wednesday(self) -> None:
         """Jump to Wednesday basket."""
-        self._jump_to_basket("Wednesday")
+        self._jump_to_basket(self._get_day_basket(2))
 
     def action_jump_thursday(self) -> None:
         """Jump to Thursday basket."""
-        self._jump_to_basket("Thursday")
+        self._jump_to_basket(self._get_day_basket(3))
 
     def action_jump_friday(self) -> None:
         """Jump to Friday basket."""
-        self._jump_to_basket("Friday")
+        self._jump_to_basket(self._get_day_basket(4))
 
     def action_jump_saturday(self) -> None:
         """Jump to Saturday basket."""
-        self._jump_to_basket("Saturday")
+        self._jump_to_basket(self._get_day_basket(5))
 
     def action_jump_sunday(self) -> None:
         """Jump to Sunday basket."""
-        self._jump_to_basket("Sunday")
+        self._jump_to_basket(self._get_day_basket(6))
 
     def action_jump_later(self) -> None:
         """Jump to Later basket."""

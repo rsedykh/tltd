@@ -1,5 +1,5 @@
 """Tests for multi-select (mark) functionality."""
-from src.models import Task, TodoData
+from src.models import Task, TodoData, get_current_week_dates
 
 
 class TestMultiSelectBasics:
@@ -157,17 +157,20 @@ class TestMultiSelectWithTodoData:
         # Mark tasks 1 and 3
         task_ids_to_move = [task1.id, task3.id]
 
+        # Get the current week's Monday date key
+        monday_key = get_current_week_dates()[0]
+
         # Bulk move to Monday
         for task_id in task_ids_to_move:
-            todo_data.move_task(task_id, "Monday")
+            todo_data.move_task(task_id, monday_key)
 
         # Only task2 should remain in Inbox
         assert len(todo_data.baskets["Inbox"]) == 1
         assert todo_data.baskets["Inbox"][0].title == "Task 2"
 
         # Tasks 1 and 3 should be in Monday
-        assert len(todo_data.baskets["Monday"]) == 2
-        monday_titles = {t.title for t in todo_data.baskets["Monday"]}
+        assert len(todo_data.baskets[monday_key]) == 2
+        monday_titles = {t.title for t in todo_data.baskets[monday_key]}
         assert "Task 1" in monday_titles
         assert "Task 3" in monday_titles
 

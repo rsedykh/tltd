@@ -5,6 +5,14 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 ## 2026-01-18
 
 ### Added
+- **Dynamic week-aware baskets**: Replaced static weekday names with date-based storage
+  - Week header shows "W: 03/26 (5/2)" format (week number, year, open/completed counts)
+  - Days display as "Monday (2)", "Tuesday (0)", etc. under the week header
+  - Automatic migration from old day-name format on first load
+  - Week transition: incomplete tasks from old weeks move to Inbox at Monday 4am
+  - Completed tasks stay archived (hidden from UI)
+  - Hourly timer checks for week transition during long-running sessions
+- 16 new tests for week functions and storage migration (95 total)
 - **Quick move with number keys**: Move tasks directly to baskets without dialog
   - When tasks panel focused: `` ` ``, `1-7`, `0` move selected task(s) to basket
   - When baskets panel focused: same keys jump to basket (original behavior)
@@ -15,12 +23,11 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
   - Log rotation at 1MB with 2 backup files
   - User notified of log file location on crash
 - **Multi-select operations**: Mark tasks for bulk actions
-  - `b` key marks/unmarks current task (Russian: `и`)
+  - `r` key marks/unmarks current task (Russian: `к`)
   - `Esc` clears all marks
   - Blue background highlight for marked tasks
-  - Bulk operations apply to all marked: `x` (complete), `r` (move), `Backspace` (delete)
+  - Bulk operations apply to all marked: `x` (complete), number keys (move), `Backspace` (delete)
   - Marks auto-clear when switching baskets
-- 12 new multi-select tests (79 total)
 - **Quick-add CLI command (`td`)**: Add tasks to Inbox from terminal
   - `td "Task title"` - add task with title
   - `td "Task title \\ description"` - add task with description
@@ -31,12 +38,18 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 - New `raycast/` directory with script commands
 
 ### Changed
+- **Data format**: Baskets now use date keys (YYYY-MM-DD) instead of day names
 - `Esc` key now clears marks instead of quitting (use `Ctrl+C` to quit)
+- Removed basket selector dialog (`r` key) - use number keys to move tasks directly
+- Mark keybind changed: `b` → `r`
 - **Modular code structure**: Split app.py (~1460 lines) into:
   - `src/widgets/` package (TaskLine, TaskTree, BasketPane)
-  - `src/dialogs/` package (BasketSelectorDialog, DescriptionEditorDialog, HelpScreen)
+  - `src/dialogs/` package (DescriptionEditorDialog, HelpScreen)
   - `src/styles.py` (CSS styles)
   - `src/app.py` now ~770 lines (orchestration only)
+
+### Removed
+- `src/dialogs/basket_selector.py` - no longer needed with quick-move feature
 
 ### Security
 - Input validation limits:
@@ -49,7 +62,7 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 
 ### Documentation
 - Updated CLAUDE.md to reflect modular code structure
-- Fixed test count (67 → 79) and added description field to data format example
+- Fixed test count (67 → 95) and added description field to data format example
 
 ## 2026-01-17
 

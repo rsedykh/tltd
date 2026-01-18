@@ -73,6 +73,15 @@ Screen {
     color: #404040;
 }
 
+.week-header {
+    color: #888888;
+    padding: 0 1;
+}
+
+.week-header.show-completed-mode {
+    color: #606060;
+}
+
 #dialog-container {
     width: 60;
     height: auto;

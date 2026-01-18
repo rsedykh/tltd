@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from .models import TodoData
+from .models import TodoData, LEGACY_DAY_BASKETS
 
 
 class StorageManager:
@@ -24,6 +24,7 @@ class StorageManager:
         """
         Load todo data from disk.
         Returns a new TodoData instance if file doesn't exist or is corrupted.
+        Automatically migrates legacy day-name format to date-based format.
         """
         if not self.file_path.exists():
             return TodoData()
@@ -31,7 +32,17 @@ class StorageManager:
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                return TodoData.from_dict(data)
+
+            # Detect if migration is needed
+            needs_migration = self._needs_migration(data)
+
+            todo_data = TodoData.from_dict(data, migrate_legacy=True)
+
+            # If we migrated, save the new format immediately
+            if needs_migration:
+                self.save(todo_data)
+
+            return todo_data
         except (json.JSONDecodeError, KeyError, OSError):
             # If file is corrupted, backup and return fresh data
             backup_path = self.file_path.with_suffix('.json.backup')
@@ -41,6 +52,10 @@ class StorageManager:
             except OSError:
                 pass
             return TodoData()
+
+    def _needs_migration(self, data: dict) -> bool:
+        """Check if the data contains legacy day-name baskets that need migration."""
+        return any(key in LEGACY_DAY_BASKETS for key in data.keys())
 
     def save(self, todo_data: TodoData) -> bool:
         """
