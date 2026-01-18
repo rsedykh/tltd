@@ -2,7 +2,24 @@
 
 This file tracks recent changes for context handoff between Claude Code sessions.
 
-## Latest Session (Multi-Select Operations)
+## Latest Session (Crash Logging)
+
+**Feature implemented:**
+
+1. **Crash logging to file**:
+   - Crashes now write full tracebacks to `~/.tltd/crash.log`
+   - Includes timestamps via Python's logging module
+   - Log rotation: 1MB max size, keeps 2 backup files (crash.log.1, crash.log.2)
+   - User sees error message + log file path on crash
+
+**Files changed:**
+- `src/main.py` (added logging setup, traceback capture)
+
+**Tests:** 79 passing
+
+---
+
+## Previous Session (Multi-Select Operations)
 
 **Major feature implemented:**
 

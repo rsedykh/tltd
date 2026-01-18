@@ -5,6 +5,10 @@ All notable changes to TLTD (Terminal Todo List) are documented in this file.
 ## 2026-01-18
 
 ### Added
+- **Crash logging**: Application errors now logged to `~/.tltd/crash.log`
+  - Full tracebacks with timestamps
+  - Log rotation at 1MB with 2 backup files
+  - User notified of log file location on crash
 - **Multi-select operations**: Mark tasks for bulk actions
   - `b` key marks/unmarks current task (Russian: `и`)
   - `Esc` clears all marks
